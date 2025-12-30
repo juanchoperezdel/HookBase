@@ -1,10 +1,16 @@
-
 import React, { useEffect, useState } from 'react';
-import { Plus, Layout, LogOut, Loader2, Zap, ChevronRight, Database, Search, ShieldAlert, Copy, Check, Terminal, AlertCircle, User, Mail, RefreshCw, Link2 } from 'lucide-react';
+import { 
+  Plus, Search, Calendar, ChevronRight, 
+  Layout, BarChart3, Settings, LogOut, 
+  FileText, Clock, Filter, ArrowUpRight, Loader2, ExternalLink, Menu, X, Zap
+} from 'lucide-react';
 import { supabase } from './supabaseClient';
 
+// --- CONFIGURACIÓN DE USUARIO (Mock) ---
+const USER_EMAIL = "agustinhlahun@gmail.com"; 
+
 interface DashboardHubProps {
-  onNavigate: (view: 'onboarding' | 'report' | 'landing' | 'login', reportId?: string) => void;
+  onNavigate: (view: 'onboarding' | 'report' | 'landing', reportId?: string) => void;
 }
 
 interface ReportView {
@@ -13,298 +19,356 @@ interface ReportView {
   status: string;
   final_slide_url: string | null;
   client_id: string;
-  display_name: string;
+  niche: string; 
+  client_name: string;
 }
 
 export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
   const [reports, setReports] = useState<ReportView[]>([]);
   const [loading, setLoading] = useState(true);
-  const [clientInfo, setClientInfo] = useState<{name: string, email: string} | null>(null);
-  const [copiedFix, setCopiedFix] = useState(false);
-  const [userId, setUserId] = useState<string>('');
-  const [orphanCount, setOrphanCount] = useState(0);
-  const [oldClientId, setOldClientId] = useState<string | null>(null);
-  const [isMigrating, setIsMigrating] = useState(false);
+  const [clientInfo, setClientInfo] = useState<{name: string, niche: string} | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !user) {
-         onNavigate('login');
-         return;
-      }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const { data: clientData, error: clientError } = await supabase
+          .from('clients')
+          .select('id, name, business_description')
+          .eq('email', USER_EMAIL)
+          .single();
 
-      const currentAuthId = user.id;
-      setUserId(currentAuthId);
-      const userEmail = user.email || '';
-      
-      setClientInfo({ 
-        name: user.user_metadata?.full_name || userEmail.split('@')[0], 
-        email: userEmail 
-      });
+        if (clientError || !clientData) {
+            setLoading(false);
+            return;
+        }
 
-      // 1. Buscar reportes con el ID de Auth actual
-      const { data: reportsData } = await supabase
-        .from('reports')
-        .select('*')
-        .eq('client_id', currentAuthId)
-        .order('created_at', { ascending: false });
+        setClientInfo({
+            name: clientData.name || "Usuario",
+            niche: clientData.business_description || "General"
+        });
 
-      if (reportsData && reportsData.length > 0) {
-        setReports(reportsData.map(r => ({
+        const { data: reportsData, error: reportsError } = await supabase
+          .from('reports')
+          .select('*')
+          .eq('client_id', clientData.id)
+          .order('created_at', { ascending: false });
+
+        if (reportsError) throw reportsError;
+
+        const combinedData: ReportView[] = (reportsData || []).map(r => ({
             id: r.id,
             created_at: r.created_at,
             status: r.status,
             final_slide_url: r.final_slide_url,
             client_id: r.client_id,
-            display_name: `Estrategia Viral #${r.id.slice(0, 4)}`
-        })));
-        setOrphanCount(0);
-        setOldClientId(null);
-      } else {
-        // 2. Si no hay reportes, buscamos si hay registros con el mismo email pero ID diferente
-        const { data: oldClientData } = await supabase
-            .from('clients')
-            .select('id')
-            .eq('email', userEmail)
-            .neq('id', currentAuthId)
-            .maybeSingle();
+            niche: clientData.business_description || "General",
+            client_name: clientData.name
+        }));
 
-        if (oldClientData) {
-            setOldClientId(oldClientData.id);
-            const { count } = await supabase
-                .from('reports')
-                .select('*', { count: 'exact', head: true })
-                .eq('client_id', oldClientData.id);
-            
-            setOrphanCount(count || 0);
-        } else {
-            setOrphanCount(0);
-            setOldClientId(null);
-        }
-        setReports([]);
+        setReports(combinedData);
+      } catch (err) {
+        console.error("Error en la carga de datos:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Fetch error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
+    };
     fetchData();
   }, []);
 
-  const handleMigrate = async () => {
-    if (!userId || !clientInfo?.email || !oldClientId) return;
-    setIsMigrating(true);
-    try {
-        // MIGRACIÓN ATÓMICA PARA EVITAR 23503 (FK) Y 23505 (Unique Email)
-        
-        // PASO 1: Obtener datos del viejo
-        const { data: oldData } = await supabase
-            .from('clients')
-            .select('*')
-            .eq('id', oldClientId)
-            .single();
-
-        if (oldData) {
-            // PASO 2: Liberar el email en el viejo (para evitar conflicto UNIQUE)
-            await supabase
-                .from('clients')
-                .update({ email: `${clientInfo.email}_old_${Date.now()}` })
-                .eq('id', oldClientId);
-
-            // PASO 3: Crear el nuevo registro con el ID de Auth actual
-            await supabase
-                .from('clients')
-                .insert({
-                    id: userId,
-                    name: oldData.name,
-                    email: clientInfo.email,
-                    business_description: oldData.business_description
-                });
-
-            // PASO 4: Mover los reportes al nuevo ID (Ahora la FK no falla porque el ID ya existe)
-            await supabase
-                .from('reports')
-                .update({ client_id: userId })
-                .eq('client_id', oldClientId);
-            
-            // PASO 5: Borrar el viejo (Ahora no falla porque no tiene reportes asociados)
-            await supabase
-                .from('clients')
-                .delete()
-                .eq('id', oldClientId);
-        }
-        
-        await fetchData();
-    } catch (e) {
-        console.error("Migration failed", e);
-        alert("Error de integridad: " + (e as any).message);
-    } finally {
-        setIsMigrating(false);
-    }
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short' }).format(date);
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    localStorage.clear();
-    onNavigate('landing');
+  const getStatusStyles = (status: string) => {
+      const s = status?.toLowerCase() || '';
+      if (s === 'completed' || s === 'completado') return { label: 'Listo', bg: 'bg-green-50', text: 'text-green-600', dot: 'bg-green-500' };
+      if (s === 'processing' || s === 'procesando') return { label: 'IA...', bg: 'bg-blue-50', text: 'text-blue-600', dot: 'bg-blue-500' };
+      return { label: 'Pendiente', bg: 'bg-yellow-50', text: 'text-yellow-600', dot: 'bg-yellow-500' };
   };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedFix(true);
-    setTimeout(() => setCopiedFix(false), 2000);
-  };
-
-  const migrationSQL = `BEGIN;\n  -- 1. Liberar email\n  UPDATE clients SET email = email || '_old' WHERE id = '${oldClientId || 'ID_VIEJO'}';\n\n  -- 2. Crear nuevo cliente\n  INSERT INTO clients (id, name, email, business_description)\n  SELECT '${userId}', name, '${clientInfo?.email}', business_description FROM clients WHERE id = '${oldClientId || 'ID_VIEJO'}';\n\n  -- 3. Mover reportes\n  UPDATE reports SET client_id = '${userId}' WHERE client_id = '${oldClientId || 'ID_VIEJO'}';\n\n  -- 4. Borrar viejo\n  DELETE FROM clients WHERE id = '${oldClientId || 'ID_VIEJO'}';\nCOMMIT;`;
-
-  if (loading) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white">
-      <Loader2 className="animate-spin text-zylo-purple mb-4" size={40} />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Reparando base de datos...</p>
-    </div>
-  );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row font-sans text-zylo-black">
-      {/* Sidebar */}
-      <aside className="w-72 bg-white border-r border-gray-100 hidden lg:flex flex-col">
-        <div className="p-10 flex items-center gap-2">
-            <Zap size={24} className="text-zylo-black fill-current" />
-            <span className="text-2xl font-black tracking-tight">HookBase</span>
+    <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row font-sans">
+      
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div className="flex items-center gap-2">
+            <Zap size={20} className="text-zylo-black fill-current" />
+            <span className="text-xl font-bold text-zylo-black">HookBase</span>
         </div>
-        <nav className="flex-1 px-6 space-y-2">
-            <button className="w-full flex items-center gap-3 px-5 py-4 text-sm font-bold text-zylo-purple bg-zylo-purpleLight/40 rounded-2xl">
+        <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Sidebar (Desktop & Mobile Overlay) */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-100 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="p-8 hidden lg:block">
+           <div className="flex items-center gap-2">
+               <Zap size={24} className="text-zylo-black fill-current" />
+               <span className="text-2xl font-bold text-zylo-black tracking-tight">HookBase</span>
+           </div>
+        </div>
+        <nav className="flex-1 px-4 py-8 lg:py-0 space-y-2">
+            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-zylo-purple bg-zylo-purpleLight/50 rounded-xl transition-colors">
                 <Layout size={18} /> Dashboard
             </button>
-            <button onClick={() => onNavigate('onboarding')} className="w-full flex items-center gap-3 px-5 py-4 text-sm font-bold text-gray-400 hover:text-zylo-black rounded-2xl">
-                <Plus size={18} /> Nuevo Reporte
+            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-500 hover:bg-gray-50 rounded-xl transition-colors">
+                <Settings size={18} /> Ajustes
             </button>
         </nav>
-        <div className="p-6 mt-auto space-y-4">
-            <button onClick={handleLogout} className="w-full flex items-center gap-3 px-5 py-4 text-sm font-bold text-red-400 hover:bg-red-50 rounded-2xl transition-colors">
-                <LogOut size={18} /> Cerrar Sesión
+
+        <div className="p-4 border-t border-gray-100">
+            <div className="bg-gray-900 rounded-2xl p-4 text-white mb-4">
+                <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-xs">Pro Plan</span>
+                    <span className="text-[10px] bg-zylo-purple/20 text-zylo-purple px-1.5 py-0.5 rounded font-bold">ACTIVO</span>
+                </div>
+                <div className="w-full bg-gray-700 h-1 rounded-full overflow-hidden mb-2">
+                    <div className="bg-zylo-green h-full w-[65%]"></div>
+                </div>
+                <p className="text-[10px] text-gray-400">{reports.length}/25 créditos</p>
+            </div>
+            <button 
+                onClick={() => onNavigate('landing')}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+            >
+                <LogOut size={18} /> Salir
             </button>
         </div>
       </aside>
 
+      {/* Overlay for mobile when sidebar is open */}
+      {isMobileMenuOpen && (
+        <div 
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Main Content */}
-      <main className="flex-1 p-6 md:p-12 lg:p-16 max-w-[1400px] mx-auto w-full">
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+      <main className="flex-1 p-4 md:p-8 lg:p-10">
+        
+        {/* Header con Datos Dinámicos */}
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 lg:mb-12">
             <div>
-                <h1 className="text-4xl md:text-5xl font-black tracking-tight">Hola, {clientInfo?.name}</h1>
-                <div className="flex flex-wrap gap-4 mt-2">
-                    <p className="text-gray-400 text-xs font-medium flex items-center gap-1">
-                        <Mail size={12} /> {clientInfo?.email}
-                    </p>
-                    <p className="text-gray-400 text-xs font-medium flex items-center gap-1">
-                        <User size={12} /> Auth ID: <span className="text-zylo-black font-mono font-bold">{userId.slice(0, 8)}...</span>
-                    </p>
-                </div>
+                <h1 className="text-2xl md:text-3xl font-extrabold text-zylo-black">
+                    Hola, {clientInfo ? clientInfo.name : '...'} 👋
+                </h1>
+                <p className="text-gray-500 text-sm md:text-base font-medium">
+                    {clientInfo ? 'Tus reportes estratégicos están listos.' : 'Cargando...'}
+                </p>
             </div>
-            <button onClick={() => onNavigate('onboarding')} className="bg-zylo-black text-white px-10 py-5 rounded-full font-black shadow-2xl hover:scale-105 transition-all flex items-center gap-3">
-                <Plus size={20} strokeWidth={3} /> Nuevo Reporte
+            <button 
+                onClick={() => onNavigate('onboarding')}
+                className="flex items-center justify-center gap-2 bg-zylo-black text-white px-8 py-4 rounded-full font-bold shadow-xl hover:bg-gray-800 transition-all active:scale-95"
+            >
+                <Plus size={20} /> <span className="text-sm">Nuevo Reporte</span>
             </button>
         </header>
 
-        {reports.length === 0 ? (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <div className="bg-white rounded-[3rem] p-10 shadow-card border border-gray-100 flex flex-col items-center justify-center text-center">
-                    <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 ${orphanCount > 0 ? 'bg-zylo-purpleLight animate-pulse' : 'bg-amber-50'}`}>
-                        {orphanCount > 0 ? <Link2 size={32} className="text-zylo-purple" /> : <AlertCircle size={32} className="text-amber-500" />}
-                    </div>
-                    
-                    {orphanCount > 0 ? (
-                        <>
-                            <h3 className="text-2xl font-black mb-2">Reparación Maestra</h3>
-                            <p className="text-gray-400 max-w-sm font-medium mb-8 leading-relaxed">
-                                Detectamos <span className="text-zylo-black font-bold">{orphanCount} reportes</span> bloqueados por un conflicto de IDs. Haz clic abajo para forzar la migración segura.
-                            </p>
-                            <button 
-                                onClick={handleMigrate} 
-                                disabled={isMigrating}
-                                className="bg-zylo-purple text-white px-8 py-4 rounded-2xl font-black shadow-lg hover:scale-105 transition-all flex items-center gap-2"
-                            >
-                                {isMigrating ? <RefreshCw className="animate-spin" /> : <ShieldAlert />}
-                                {isMigrating ? 'Migrando datos...' : 'Arreglar mi Cuenta'}
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <h3 className="text-2xl font-black mb-2">No hay reportes</h3>
-                            <p className="text-gray-400 max-w-sm font-medium mb-8">
-                                No encontramos datos para <strong>{clientInfo?.email}</strong>.
-                            </p>
-                            <button onClick={() => fetchData()} className="bg-zylo-black text-white px-8 py-4 rounded-2xl font-black shadow-lg hover:scale-105 transition-all">
-                                Reintentar
-                            </button>
-                        </>
-                    )}
+        {/* Stats Grid - Now vertical on small mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 lg:mb-12">
+            <div className="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex items-center gap-4">
+                <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl">
+                    <FileText size={22} />
                 </div>
-
-                <div className="bg-zylo-black rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden border border-gray-800">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-zylo-purple opacity-10 blur-[100px]"></div>
-                    <div className="relative z-10 flex flex-col h-full">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="p-2 bg-zylo-green text-zylo-black rounded-lg"><Terminal size={20} /></div>
-                            <h3 className="text-xl font-black tracking-tight text-zylo-green">Query Anti-Errores</h3>
-                        </div>
-
-                        <div className="space-y-6">
-                            <div className="p-6 bg-zylo-green/10 rounded-3xl border border-zylo-green/20">
-                                <p className="text-zylo-green font-bold text-[10px] uppercase tracking-[0.2em] mb-4">SQL DE REPARACIÓN TOTAL:</p>
-                                <div className="relative group">
-                                    <div className="bg-gray-900 rounded-xl p-5 font-mono text-[8px] text-gray-300 border border-zylo-green/30 overflow-x-auto pr-16 leading-relaxed">
-                                        <pre>{migrationSQL}</pre>
-                                    </div>
-                                    <button 
-                                        onClick={() => copyToClipboard(migrationSQL)}
-                                        className="absolute right-3 top-3 p-3 bg-zylo-green text-zylo-black rounded-xl hover:scale-105 transition-all"
-                                    >
-                                        {copiedFix ? <Check size={18} strokeWidth={3} /> : <Copy size={18} strokeWidth={3} />}
-                                    </button>
-                                </div>
-                                <p className="text-[10px] text-gray-400 mt-4 leading-relaxed">
-                                    Usa este código en el <strong>SQL Editor</strong> de Supabase. Cambia el email del viejo para evitar el error de duplicado y luego mueve los reportes.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    <h3 className="text-2xl font-black text-zylo-black">{reports.length}</h3>
+                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Reportes</p>
                 </div>
             </div>
-        ) : (
-            <div className="bg-white rounded-[3rem] shadow-card border border-gray-100 overflow-hidden">
-                <table className="w-full text-left">
+            
+            <div className="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex items-center gap-4">
+                <div className="p-3.5 bg-green-50 text-green-600 rounded-2xl">
+                    <Clock size={22} />
+                </div>
+                <div>
+                    <h3 className="text-2xl font-black text-zylo-black">{(reports.length * 2.5).toFixed(0)}h</h3>
+                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Estrés evitado</p>
+                </div>
+            </div>
+
+            <div className="bg-zylo-black p-6 rounded-3xl shadow-xl border border-gray-900 text-white flex items-center gap-4 relative overflow-hidden sm:col-span-2 lg:col-span-1">
+                <div className="p-3.5 bg-white/10 text-white rounded-2xl relative z-10">
+                    <Zap size={22} />
+                </div>
+                <div className="relative z-10 overflow-hidden">
+                    <h3 className="text-xl font-black truncate">{clientInfo?.niche || "Rubro activo"}</h3>
+                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tu Industria</p>
+                </div>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-zylo-purple opacity-20 blur-2xl rounded-full translate-x-1/2 -translate-y-1/2"></div>
+            </div>
+        </div>
+
+        {/* Reports History Section */}
+        <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-card border border-gray-100 overflow-hidden">
+            <div className="p-6 md:p-8 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <h2 className="text-lg md:text-xl font-extrabold text-zylo-black">Historial Estratégico</h2>
+                
+                <div className="flex items-center gap-2">
+                    <div className="relative flex-1 sm:flex-initial">
+                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input 
+                            type="text" 
+                            placeholder="Buscar reporte..." 
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50 rounded-2xl text-sm font-medium outline-none border border-transparent focus:border-gray-200 transition-all"
+                        />
+                    </div>
+                    <button className="p-3 bg-gray-50 rounded-2xl text-gray-500 hover:bg-gray-100 transition-colors">
+                        <Filter size={20} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Content: Mobile Cards vs Desktop Table */}
+            <div className="block md:hidden">
+                {/* Mobile view - Simple vertical list of cards */}
+                {loading ? (
+                    <div className="p-10 text-center"><Loader2 className="animate-spin inline-block mr-2" /> Cargando...</div>
+                ) : reports.length === 0 ? (
+                    <div className="p-10 text-center text-gray-400">Sin reportes aún.</div>
+                ) : (
+                    <div className="divide-y divide-gray-50">
+                        {reports.map((report) => {
+                            const styles = getStatusStyles(report.status);
+                            const displayTitle = report.niche 
+                                ? `Estrategia ${report.niche}` 
+                                : "Reporte Viral";
+                            return (
+                                <div 
+                                    key={report.id}
+                                    onClick={() => onNavigate('report', report.id)}
+                                    className="p-6 active:bg-gray-50 flex flex-col gap-4"
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-purple-50 text-zylo-purple flex items-center justify-center shrink-0">
+                                                <FileText size={18} />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 leading-tight line-clamp-1">{displayTitle}</h4>
+                                                <p className="text-xs text-gray-400 font-medium">{formatDate(report.created_at)}</p>
+                                            </div>
+                                        </div>
+                                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${styles.bg} ${styles.text}`}>
+                                            {styles.label}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex gap-2">
+                                             {report.final_slide_url && (
+                                                <a 
+                                                    href={report.final_slide_url} 
+                                                    target="_blank" 
+                                                    rel="noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="p-2 bg-blue-50 text-blue-500 rounded-lg"
+                                                >
+                                                    <ExternalLink size={16} />
+                                                </a>
+                                             )}
+                                        </div>
+                                        <button className="flex items-center gap-1 text-xs font-bold text-zylo-purple">
+                                            Ver Reporte <ChevronRight size={14} />
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
+            {/* Desktop View - Traditional Table */}
+            <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50/50 border-b border-gray-50">
-                            <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Estrategia</th>
-                            <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha</th>
-                            <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acción</th>
+                        <tr className="bg-gray-50/30 border-b border-gray-50">
+                            <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Estrategia</th>
+                            <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha</th>
+                            <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Estado</th>
+                            <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acción</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                        {reports.map((report) => (
-                            <tr key={report.id} onClick={() => onNavigate('report', report.id)} className="group hover:bg-gray-50 transition-all cursor-pointer">
-                                <td className="px-10 py-8 font-black text-lg">{report.display_name}</td>
-                                <td className="px-10 py-8 text-gray-400 font-medium">
-                                    {new Date(report.created_at).toLocaleDateString()}
-                                </td>
-                                <td className="px-10 py-8 text-right">
-                                    <div className="inline-flex p-3 bg-zylo-black text-white rounded-2xl shadow-lg group-hover:translate-x-1 transition-transform">
-                                        <ChevronRight size={18} strokeWidth={3} />
-                                    </div>
+                        {loading ? (
+                            <tr>
+                                <td colSpan={4} className="p-12 text-center text-gray-400">
+                                    <Loader2 className="animate-spin inline-block" />
                                 </td>
                             </tr>
-                        ))}
+                        ) : reports.map((report) => {
+                            const styles = getStatusStyles(report.status);
+                            return (
+                                <tr 
+                                    key={report.id} 
+                                    onClick={() => onNavigate('report', report.id)}
+                                    className="group hover:bg-gray-50 transition-colors cursor-pointer"
+                                >
+                                    <td className="p-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-zylo-purpleLight group-hover:text-zylo-purple transition-all">
+                                                <FileText size={18} />
+                                            </div>
+                                            <span className="font-bold text-gray-900 capitalize truncate max-w-[200px]">
+                                                {report.niche ? `Estrategia ${report.niche}` : 'Reporte Viral'}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="p-6 text-sm text-gray-500 font-medium">
+                                        {formatDate(report.created_at)}
+                                    </td>
+                                    <td className="p-6">
+                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${styles.bg} ${styles.text}`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${styles.dot}`}></span>
+                                            {styles.label}
+                                        </span>
+                                    </td>
+                                    <td className="p-6 text-right">
+                                        <div className="flex justify-end gap-2">
+                                            {report.final_slide_url && (
+                                                <a 
+                                                    href={report.final_slide_url} 
+                                                    target="_blank" 
+                                                    rel="noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="p-2 rounded-xl text-blue-500 hover:bg-blue-50 transition-colors"
+                                                >
+                                                    <ExternalLink size={18} />
+                                                </a>
+                                            )}
+                                            <div className="p-2 rounded-xl text-gray-300 group-hover:text-zylo-purple transition-colors">
+                                                <ChevronRight size={20} />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
-        )}
+
+            {!loading && reports.length > 0 && (
+                <div className="p-6 bg-gray-50/30 flex items-center justify-between text-[11px] text-gray-400 font-bold uppercase tracking-wider">
+                    <span>{reports.length} Reportes en total</span>
+                    <div className="flex gap-2">
+                        <button className="px-4 py-2 rounded-xl border border-gray-100 bg-white opacity-50 cursor-not-allowed">Atras</button>
+                        <button className="px-4 py-2 rounded-xl border border-gray-100 bg-white opacity-50 cursor-not-allowed">Siguiente</button>
+                    </div>
+                </div>
+            )}
+        </div>
       </main>
     </div>
   );
