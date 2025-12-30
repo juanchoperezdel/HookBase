@@ -1,87 +1,119 @@
 import React from 'react';
-import { Play, CheckCircle, FileText } from 'lucide-react';
+import { FileText, ArrowRight, Check } from 'lucide-react';
 import { Button } from './ui/moving-border';
 
 interface HeroProps {
   onDemoClick?: () => void;
+  onGetStarted?: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onDemoClick }) => {
+export const Hero: React.FC<HeroProps> = ({ onDemoClick, onGetStarted }) => {
   return (
-    <section className="relative overflow-hidden pb-20 pt-10 lg:pb-32 lg:pt-20">
-      {/* Background Blobs */}
-      <div className="absolute top-0 right-0 -z-10 w-96 h-96 bg-zylo-greenLight rounded-bl-[100px] rounded-tl-[50px] opacity-60 blur-3xl hidden lg:block"></div>
-      <div className="absolute top-40 left-0 -z-10 w-80 h-80 bg-zylo-purpleLight rounded-tr-[100px] rounded-br-[50px] opacity-60 blur-3xl hidden lg:block"></div>
+    <section className="relative overflow-hidden pb-10 pt-10 lg:pb-32 lg:pt-20">
+      {/* Background Blobs for Atmosphere */}
+      <div className="absolute top-0 right-0 -z-10 w-[500px] h-[500px] bg-zylo-greenLight rounded-full opacity-40 blur-[120px] hidden lg:block"></div>
+      <div className="absolute top-40 left-0 -z-10 w-[400px] h-[400px] bg-zylo-purpleLight rounded-full opacity-40 blur-[100px] hidden lg:block"></div>
 
       <div className="container mx-auto px-6 md:px-12 text-center">
         
-        {/* Badge */}
-        <div className="mb-8 flex justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-zylo-greenLight px-4 py-1.5 text-sm font-bold text-zylo-black ring-1 ring-inset ring-zylo-green/50">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+        {/* Badge Indicator */}
+        <div className="mb-10 flex justify-center">
+          <div className="inline-flex items-center gap-2 rounded-full bg-zylo-greenLight/50 px-5 py-2 text-sm font-bold text-zylo-black border border-zylo-green/20">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-zylo-green"></span>
             </span>
             Contenido viral basado en datos reales
-          </span>
+          </div>
         </div>
 
-        {/* Headline */}
-        <h1 className="mx-auto max-w-5xl text-4xl font-extrabold tracking-tight text-zylo-black sm:text-5xl md:text-6xl mb-6 leading-[1.15]">
-          Dejá de adivinar qué grabar. <br className="hidden md:block" />
-          Recibí <span className="text-transparent bg-clip-text bg-gradient-to-r from-zylo-purple to-purple-600">ideas de videos virales</span> que ya están funcionando en tu industria
+        {/* Main Headline */}
+        <h1 className="mx-auto max-w-5xl text-4xl font-extrabold tracking-tight text-zylo-black sm:text-6xl md:text-7xl mb-4 leading-[1.1]">
+          Dejá de adivinar qué grabar.<br />
+          Recibí <span className="text-zylo-purple">ideas de videos virales</span> que ya están funcionando en tu industria
         </h1>
 
-        <p className="mx-auto max-w-2xl text-lg text-gray-500 mb-10 leading-relaxed">
+        {/* Descriptive Text */}
+        <p className="mx-auto max-w-3xl text-base md:text-xl text-gray-500 mb-10 font-medium px-4">
           Contenido real. Analizado por IA. Listo para copiar, adaptar y publicar.
         </p>
 
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+        {/* Primary and Secondary CTAs */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 mb-16 px-4">
           <Button 
-            as="a"
-            href="#pricing"
+            onClick={onGetStarted}
             borderRadius="9999px"
-            containerClassName="p-[1px]"
+            containerClassName="p-[2px] w-full sm:w-auto"
             borderClassName="bg-[radial-gradient(var(--zylo-purple)_40%,transparent_60%)]"
-            className="flex items-center gap-2 bg-zylo-black px-8 py-4 text-base font-bold text-white transition-all hover:bg-gray-800"
+            duration={3000}
+            className="flex items-center justify-center gap-3 bg-zylo-black px-8 md:px-10 py-4 md:py-5 text-lg font-bold text-white transition-all hover:bg-gray-800 cursor-pointer shadow-xl w-full"
           >
-            <Play size={18} fill="currentColor" />
-            Probar gratis ahora
+            Empezar ahora
+            <ArrowRight size={20} />
           </Button>
           
           <button 
             onClick={onDemoClick}
-            className="flex items-center gap-2 rounded-full bg-white border-2 border-gray-100 px-8 py-4 text-base font-bold text-zylo-black hover:border-gray-300 hover:bg-gray-50 transition-all"
+            className="flex items-center justify-center gap-3 rounded-full bg-white border-2 border-gray-200 px-8 md:px-10 py-4 md:py-5 text-lg font-bold text-zylo-black hover:border-zylo-black hover:bg-gray-50 transition-all shadow-sm group w-full sm:w-auto"
           >
-            <FileText size={18} />
-            Ver ejemplo de reporte
+            <FileText size={20} className="text-gray-400 group-hover:text-zylo-black transition-colors" />
+            Ver reporte demo
           </button>
         </div>
         
-        <div className="flex items-center justify-center gap-4 text-sm font-medium text-gray-500">
-            <span className="flex items-center gap-1"><CheckCircle size={14} className="text-zylo-green" /> Sin compromiso</span>
-            <span className="flex items-center gap-1"><CheckCircle size={14} className="text-zylo-green" /> Cancela cuando quieras</span>
+        {/* Restored Features / Trust Markers - Optimized for Responsive Layout */}
+        <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 md:gap-10 mb-16 animate-fade-in px-4">
+            <div className="flex items-center gap-3 text-gray-400 font-bold group">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-zylo-green text-zylo-green group-hover:bg-zylo-green/10 transition-colors">
+                    <Check size={14} strokeWidth={3} />
+                </div>
+                <span className="text-base md:text-xl">Reportes personalizados</span>
+            </div>
+            
+            <div className="flex items-center gap-3 text-gray-400 font-bold group">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-zylo-green text-zylo-green group-hover:bg-zylo-green/10 transition-colors">
+                    <Check size={14} strokeWidth={3} />
+                </div>
+                <span className="text-base md:text-xl">7 días gratis</span>
+            </div>
+
+            <div className="flex items-center gap-3 text-gray-400 font-bold group">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-zylo-green text-zylo-green group-hover:bg-zylo-green/10 transition-colors">
+                    <Check size={14} strokeWidth={3} />
+                </div>
+                <span className="text-base md:text-xl">Sin tarjeta de crédito</span>
+            </div>
         </div>
 
-        {/* Visual Mockup (Abstracted Cards) */}
-        <div className="relative mx-auto mt-16 max-w-4xl">
-            <div className="flex justify-center gap-4 md:gap-8 opacity-90">
-                {/* Card 1 */}
-                <div className="w-32 md:w-48 h-20 md:h-28 bg-gradient-to-r from-orange-400 to-red-400 rounded-2xl shadow-lg transform rotate-[-6deg] translate-y-4 flex items-center justify-center">
-                     <div className="text-white text-xs md:text-sm font-bold">VIRAL TREND</div>
+        {/* Floating Mockup Cards - Optimized for Mobile */}
+        <div className="relative mx-auto mt-10 max-w-4xl px-2">
+            <div className="flex justify-center items-center gap-2 md:gap-10 perspective-1000 scale-[0.85] sm:scale-100">
+                
+                {/* Retention Card */}
+                <div className="w-28 sm:w-40 md:w-60 h-24 sm:h-28 md:h-40 bg-gradient-to-br from-orange-400 to-pink-500 rounded-2xl sm:rounded-3xl shadow-xl transform rotate-[-6deg] sm:rotate-[-8deg] translate-x-2 sm:translate-x-0 hover:rotate-0 transition-transform duration-500 flex flex-col p-3 sm:p-6 items-start justify-end text-left border border-white/20">
+                     <div className="text-white text-[8px] sm:text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Retención Promedio</div>
+                     <div className="text-white text-xl sm:text-3xl font-black">94.2%</div>
                 </div>
-                 {/* Card 2 */}
-                <div className="w-32 md:w-48 h-20 md:h-28 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl shadow-xl z-10 transform scale-110 flex items-center justify-center">
-                    <div className="text-white text-xs md:text-sm font-bold">HIGH ENGAGEMENT</div>
+
+                {/* Growth Card (Center) */}
+                <div className="w-32 sm:w-48 md:w-64 h-28 sm:h-32 md:h-44 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl sm:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-10 transform scale-110 flex flex-col p-4 sm:p-8 items-start justify-end text-left border border-white/10">
+                    <div className="flex flex-col mb-1 sm:mb-2">
+                        <span className="text-zylo-green text-[8px] sm:text-[10px] font-black uppercase tracking-widest leading-none">Crecimiento</span>
+                        <span className="text-white text-[8px] sm:text-[10px] font-black uppercase tracking-widest leading-none">Mensual</span>
+                    </div>
+                    <div className="text-white text-lg sm:text-2xl md:text-3xl font-black leading-tight">
+                        +12.4k<br/>followers
+                    </div>
                 </div>
-                 {/* Card 3 */}
-                <div className="w-32 md:w-48 h-20 md:h-28 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg transform rotate-[6deg] translate-y-4 flex items-center justify-center">
-                    <div className="text-white text-xs md:text-sm font-bold">89K VIEWS</div>
+
+                {/* Viral Score Card */}
+                <div className="w-28 sm:w-40 md:w-60 h-24 sm:h-28 md:h-40 bg-gradient-to-br from-zylo-purple to-indigo-600 rounded-2xl sm:rounded-3xl shadow-xl transform rotate-[6deg] sm:rotate-[8deg] -translate-x-2 sm:translate-x-0 hover:rotate-0 transition-transform duration-500 flex flex-col p-3 sm:p-6 items-start justify-end text-left border border-white/20">
+                    <div className="text-white text-[8px] sm:text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Score de Viralidad</div>
+                    <div className="text-white text-xl sm:text-3xl font-black">9.8/10</div>
                 </div>
             </div>
-            {/* Glassmorphism overlay effect */}
-            <div className="absolute inset-0 -bottom-10 bg-gradient-to-t from-white via-white/50 to-transparent z-20"></div>
+            
+            {/* Visual Fade effect */}
+            <div className="absolute inset-x-0 -bottom-10 h-32 md:h-48 bg-gradient-to-t from-white via-white/80 to-transparent z-20"></div>
         </div>
       </div>
     </section>

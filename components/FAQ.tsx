@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
@@ -86,48 +87,50 @@ HookBase es un sistema de decisión.`
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-20 bg-white scroll-mt-24">
+    <section id="faq" className="py-24 bg-white scroll-mt-24">
       <div className="container mx-auto px-6 md:px-12 max-w-4xl">
-        <h2 className="text-3xl md:text-5xl font-extrabold text-center text-zylo-black mb-4">
-          Preguntas frecuentes
-        </h2>
-        <p className="text-center text-gray-500 mb-12">
-            Todo lo que necesitas saber sobre HookBase
-        </p>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-zylo-black mb-4 tracking-tight">
+            Preguntas frecuentes
+          </h2>
+          <p className="text-gray-500 font-medium max-w-lg mx-auto leading-relaxed">
+            Todo lo que necesitas saber sobre HookBase para transformar tu contenido.
+          </p>
+        </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <div 
                 key={index} 
-                className={`group rounded-2xl border transition-all duration-300 overflow-hidden ${
+                className={`group rounded-[2.5rem] border-2 transition-all duration-500 overflow-hidden relative ${
                   isOpen 
-                    ? 'bg-zylo-purpleLight border-2 border-zylo-purple shadow-md' 
-                    : 'bg-gray-50 border border-gray-100 hover:border-gray-300'
+                    ? 'bg-zylo-purpleLight/30 border-zylo-purple shadow-[0_20px_60px_-15px_rgba(232,121,249,0.2)] -translate-y-1' 
+                    : 'bg-white border-gray-100 hover:border-gray-200 hover:bg-gray-50/30'
                 }`}
               >
+                {/* Visual accent bar for open state */}
+                <div className={`absolute top-0 left-0 bottom-0 w-1.5 bg-zylo-purple transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0'}`} />
+
                 <button 
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
+                  className="w-full flex items-center justify-between p-7 md:p-9 text-left focus:outline-none"
                 >
-                  <span className={`font-bold text-lg transition-colors ${isOpen ? 'text-zylo-black' : 'text-gray-700'}`}>
+                  <span className={`font-bold text-lg md:text-2xl transition-colors duration-300 pr-8 ${isOpen ? 'text-zylo-black' : 'text-gray-600 group-hover:text-gray-900'}`}>
                     {faq.q}
                   </span>
-                  <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
-                    <ChevronDown 
-                      size={20} 
-                      className={isOpen ? 'text-zylo-purple' : 'text-gray-400'} 
-                    />
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-500 flex-shrink-0 ${isOpen ? 'bg-zylo-purple text-white rotate-180 shadow-lg' : 'bg-gray-100 text-gray-400 group-hover:text-gray-600 shadow-sm'}`}>
+                    <ChevronDown size={24} strokeWidth={2.5} />
                   </div>
                 </button>
                 <div 
-                  className={`grid transition-[grid-template-rows] duration-300 ease-out ${
-                    isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                  className={`grid transition-[grid-template-rows,opacity,padding] duration-500 ease-in-out ${
+                    isOpen ? 'grid-rows-[1fr] opacity-100 pb-9' : 'grid-rows-[0fr] opacity-0 pb-0'
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="px-6 pb-6 text-gray-700 leading-relaxed font-medium whitespace-pre-line">
+                    <div className="px-9 text-gray-700 leading-relaxed font-medium whitespace-pre-line text-base md:text-lg">
                       {faq.a}
                     </div>
                   </div>

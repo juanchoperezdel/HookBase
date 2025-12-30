@@ -1,16 +1,14 @@
-import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+
+import { GoogleGenAI, Type } from "@google/genai";
 import { HookIdea, ToneType } from "../types";
 
-const apiKey = process.env.API_KEY;
-
-const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
-
 export const generateViralHooks = async (topic: string, tone: ToneType): Promise<HookIdea[]> => {
-  if (!genAI) {
-    throw new Error("API Key is missing. Please check your environment variables.");
-  }
-
-  // Prompt instructions updated to request Spanish output
+  // Always create a new instance with the latest key as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  // Using gemini-3-pro-preview for high-quality marketing reasoning
+  const model = "gemini-3-pro-preview";
+  
   const prompt = `
     Actúa como un estratega de contenido viral de clase mundial para plataformas como TikTok, Instagram Reels y YouTube Shorts.
     Genera 6 ideas de "hooks" (ganchos) distintas, altamente atractivas y diseñadas para detener el scroll, para un video sobre "${topic}".
@@ -27,21 +25,22 @@ export const generateViralHooks = async (topic: string, tone: ToneType): Promise
   `;
 
   try {
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      generationConfig: {
+    const response = await ai.models.generateContent({
+      model,
+      contents: prompt,
+      config: {
         responseMimeType: "application/json",
         responseSchema: {
-          type: SchemaType.OBJECT,
+          type: Type.OBJECT,
           properties: {
             hooks: {
-              type: SchemaType.ARRAY,
+              type: Type.ARRAY,
               items: {
-                type: SchemaType.OBJECT,
+                type: Type.OBJECT,
                 properties: {
-                  hook: { type: SchemaType.STRING },
-                  category: { type: SchemaType.STRING },
-                  explanation: { type: SchemaType.STRING }
+                  hook: { type: Type.STRING },
+                  category: { type: Type.STRING },
+                  explanation: { type: Type.STRING }
                 },
                 required: ["hook", "category", "explanation"]
               }
@@ -51,11 +50,9 @@ export const generateViralHooks = async (topic: string, tone: ToneType): Promise
       }
     });
 
-    const result = await model.generateContent(prompt);
-    const jsonText = result.response.text();
-
+    const jsonText = response.text;
     if (!jsonText) {
-      throw new Error("No text returned from Gemini.");
+      throw new Error("No se recibió respuesta del modelo.");
     }
 
     const data = JSON.parse(jsonText);

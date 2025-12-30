@@ -1,7 +1,11 @@
 import React from 'react';
 import { CheckCircle2, PlayCircle, ArrowRight } from 'lucide-react';
 
-export const DataProof: React.FC = () => {
+interface DataProofProps {
+  onGetStarted?: () => void;
+}
+
+export const DataProof: React.FC<DataProofProps> = ({ onGetStarted }) => {
   const samples = [
     {
       niche: "Inmobiliaria",
@@ -91,13 +95,13 @@ export const DataProof: React.FC = () => {
 
         {/* CTA Button */}
         <div className="text-center">
-             <a 
-               href="#pricing" 
+             <button 
+               onClick={onGetStarted}
                className="inline-flex items-center gap-2 rounded-full bg-zylo-black px-8 py-4 text-base font-bold text-white shadow-xl hover:bg-gray-800 hover:scale-105 transition-all group"
              >
                 Quiero acceder a esta data ahora
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-             </a>
+             </button>
         </div>
 
       </div>
