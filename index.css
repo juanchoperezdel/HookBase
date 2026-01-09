@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+        /* Variables for Moving Border Component */
+        --sky-500: #0ea5e9;
+        --zylo-purple: #E879F9;
+        --zylo-green: #6EE7B7;
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+}
+
+@layer components {
+    .blob-shape {
+        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    }
+}
