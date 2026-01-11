@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
     Plus, Search, Calendar, ChevronRight,
     Layout, BarChart3, Settings, LogOut,
-    FileText, Clock, Filter, ArrowUpRight, Loader2, ExternalLink, Menu, X, Zap
+    FileText, Clock, Filter, ArrowUpRight, Loader2, ExternalLink, Menu, X, Zap,
+    Mic2, Target, HeartHandshake, Star, Sparkles, Eye, CheckCircle
 } from 'lucide-react';
 import { supabase } from './supabaseClient'; // Asegúrate de que la ruta sea correcta
 
@@ -455,135 +456,149 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                         <div className="xl:col-span-2 space-y-8">
                             <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-100 flex flex-col gap-8">
                                 <h2 className="text-xl font-extrabold text-zylo-black flex items-center gap-2">
-                                    <Zap size={20} className="text-zylo-purple" /> Información del Negocio
+                                    <Zap size={20} className="text-zylo-purple" /> Esencia de Marca
                                 </h2>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Nombre Completo</label>
-                                        <input
-                                            type="text"
-                                            value={editData?.full_name || ''}
-                                            onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
-                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">WhatsApp</label>
-                                        <input
-                                            type="text"
-                                            value={editData?.whatsapp || ''}
-                                            onChange={(e) => setEditData({ ...editData, whatsapp: e.target.value })}
-                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Nombre de la Empresa</label>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1">Nombre Comercial</label>
                                         <input
                                             type="text"
                                             value={editData?.company_name || ''}
                                             onChange={(e) => setEditData({ ...editData, company_name: e.target.value })}
-                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
+                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none transition-all font-bold"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Industria / Nicho</label>
-                                        <input
-                                            type="text"
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1">Rubro Principal</label>
+                                        <select
                                             value={editData?.industry || ''}
                                             onChange={(e) => setEditData({ ...editData, industry: e.target.value })}
-                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                        />
+                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none appearance-none font-bold"
+                                        >
+                                            <option value="">Seleccionar...</option>
+                                            <option value="Real Estate">Inmobiliaria</option>
+                                            <option value="Fitness">Fitness & Salud</option>
+                                            <option value="Ecommerce">E-commerce</option>
+                                            <option value="Professional Services">Servicios Profesionales</option>
+                                            <option value="Other">Otro</option>
+                                        </select>
                                     </div>
                                 </div>
 
                                 <div className="space-y-6 pt-4 border-t border-gray-50">
-                                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Estrategia y Tono</h3>
-
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Tono de Marca</label>
-                                            <input
-                                                type="text"
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
+                                                <Mic2 size={12} className="text-zylo-purple" /> Tono de Voz
+                                            </label>
+                                            <select
                                                 value={editData?.brand_tone || ''}
                                                 onChange={(e) => setEditData({ ...editData, brand_tone: e.target.value })}
-                                                placeholder="Ej: Informativo, Gracioso, Serio"
-                                                className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                            />
+                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none appearance-none font-bold"
+                                            >
+                                                <option value="">Seleccionar...</option>
+                                                <option value="Friendly">Amigable y Cercano</option>
+                                                <option value="Professional">Profesional y Autoritario</option>
+                                                <option value="Disruptive">Provocador y Directo</option>
+                                                <option value="Scientific">Educativo y Basado en Datos</option>
+                                            </select>
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">USP (Propuesta única)</label>
-                                            <input
-                                                type="text"
-                                                value={editData?.usp || ''}
-                                                onChange={(e) => setEditData({ ...editData, usp: e.target.value })}
-                                                className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                            />
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
+                                                <Target size={12} className="text-zylo-green" /> Objetivo Viral
+                                            </label>
+                                            <select
+                                                value={editData?.goal || ''}
+                                                onChange={(e) => setEditData({ ...editData, goal: e.target.value })}
+                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none appearance-none font-bold"
+                                            >
+                                                <option value="">Seleccionar...</option>
+                                                <option value="Ventas">Generar Ventas</option>
+                                                <option value="Seguidores">Crecer Audiencia</option>
+                                                <option value="Autoridad">Marca Personal / Autoridad</option>
+                                            </select>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Objetivo del Canal</label>
-                                        <textarea
-                                            value={editData?.goal || ''}
-                                            onChange={(e) => setEditData({ ...editData, goal: e.target.value })}
-                                            rows={2}
-                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all resize-none"
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-6 pt-4 border-t border-gray-50">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Percepción Actual</label>
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1.5">
+                                                <Eye size={14} className="text-blue-500" /> ¿Qué piensan tus seguidores de vos hoy?
+                                            </label>
                                             <textarea
                                                 value={editData?.brand_perception || ''}
                                                 onChange={(e) => setEditData({ ...editData, brand_perception: e.target.value })}
                                                 rows={2}
-                                                className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all resize-none"
+                                                placeholder="Ej: Siento que me ven demasiado técnico..."
+                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-2xl px-5 py-4 text-base outline-none resize-none font-medium leading-relaxed"
                                             />
                                         </div>
+
                                         <div className="space-y-2">
-                                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Aspiración de Marca</label>
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1.5">
+                                                <Sparkles size={14} className="text-zylo-yellow" /> ¿Qué te gustaría que piensen?
+                                            </label>
                                             <textarea
                                                 value={editData?.brand_aspiration || ''}
                                                 onChange={(e) => setEditData({ ...editData, brand_aspiration: e.target.value })}
                                                 rows={2}
-                                                className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all resize-none"
+                                                placeholder="Ej: Quiero que sientan que soy la autoridad número 1..."
+                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-2xl px-5 py-4 text-base outline-none resize-none font-medium leading-relaxed"
                                             />
                                         </div>
-                                    </div>
 
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Punto de dolor del público</label>
-                                        <textarea
-                                            value={editData?.target_pain_point || ''}
-                                            onChange={(e) => setEditData({ ...editData, target_pain_point: e.target.value })}
-                                            rows={2}
-                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all resize-none"
-                                        />
-                                    </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
+                                                    <HeartHandshake size={12} className="text-red-400" /> Problema Principal
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={editData?.target_pain_point || ''}
+                                                    onChange={(e) => setEditData({ ...editData, target_pain_point: e.target.value })}
+                                                    placeholder="Ej. Les cuesta ahorrar..."
+                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none font-medium"
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
+                                                    <Star size={12} className="text-zylo-yellow" /> Diferencial Único
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={editData?.usp || ''}
+                                                    onChange={(e) => setEditData({ ...editData, usp: e.target.value })}
+                                                    placeholder="Ej. Resultados rápidos..."
+                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none font-medium"
+                                                />
+                                            </div>
+                                        </div>
 
-                                    <div className="space-y-4">
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Formatos de Video</label>
-                                        <div className="flex flex-wrap gap-3">
-                                            {['Vlogs', 'Tutoriales', 'Talking Head', 'Trends', 'Educativo', 'Entretenimiento'].map((format) => (
-                                                <button
-                                                    key={format}
-                                                    onClick={() => {
-                                                        const current = editData.video_formats || [];
-                                                        const next = current.includes(format)
-                                                            ? current.filter((f: string) => f !== format)
-                                                            : [...current, format];
-                                                        setEditData({ ...editData, video_formats: next });
-                                                    }}
-                                                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${editData?.video_formats?.includes(format)
-                                                            ? 'bg-zylo-purple border-zylo-purple text-white shadow-lg shadow-zylo-purple/25'
-                                                            : 'bg-white border-gray-100 text-gray-400 hover:border-zylo-purple hover:text-zylo-purple'
-                                                        }`}
-                                                >
-                                                    {format}
-                                                </button>
-                                            ))}
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1">Formatos de Video</label>
+                                            <div className="flex flex-wrap gap-2.5">
+                                                {['Cara a cámara', 'Narrado con stock/B-roll', 'Tutorial de pantalla', 'Voz en off con texto', 'POV / Lifestyle'].map((format) => {
+                                                    const isSelected = editData?.video_formats?.includes(format);
+                                                    return (
+                                                        <button
+                                                            key={format}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const current = editData.video_formats || [];
+                                                                const next = current.includes(format)
+                                                                    ? current.filter((f: string) => f !== format)
+                                                                    : [...current, format];
+                                                                setEditData({ ...editData, video_formats: next });
+                                                            }}
+                                                            className={`px-4 py-3 rounded-full text-[10px] font-bold border-2 transition-all active:scale-95 ${isSelected ? 'bg-zylo-black text-white border-zylo-black' : 'bg-white text-gray-400 border-gray-100 hover:border-gray-200 shadow-sm'
+                                                                }`}
+                                                        >
+                                                            {format} {isSelected && <CheckCircle size={10} className="inline ml-1" />}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
