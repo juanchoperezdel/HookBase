@@ -3,7 +3,8 @@ import {
     Plus, Search, Calendar, ChevronRight,
     Layout, BarChart3, Settings, LogOut,
     FileText, Clock, Filter, ArrowUpRight, Loader2, ExternalLink, Menu, X, Zap,
-    Mic2, Target, HeartHandshake, Star, Sparkles, Eye, CheckCircle, Lock, Key
+    Mic2, Target, HeartHandshake, Star, Sparkles, Eye, CheckCircle, Lock, Key,
+    User, Award, TrendingUp, Sparkle, ChevronDown, ShieldCheck
 } from 'lucide-react';
 import { supabase } from './supabaseClient'; // Asegúrate de que la ruta sea correcta
 
@@ -274,336 +275,347 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
             )}
 
             {/* Main Content */}
-            <main className="flex-1 p-4 md:p-8 lg:p-10">
-
-                {/* Header */}
-                <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 lg:mb-12">
-                    <div>
-                        <h1 className="text-2xl md:text-3xl font-extrabold text-zylo-black">
-                            {loading ? <div className="h-8 w-48 bg-gray-200 animate-pulse rounded-lg"></div> :
-                                activeTab === 'settings' ? 'Ajustes del Perfil' :
-                                    activeTab === 'billing' ? 'Tu Suscripción' :
-                                        `Hola, ${clientInfo?.full_name?.split(' ')[0] || '...'} 👋`}
-                        </h1>
-                        <p className="text-gray-500 text-sm md:text-base font-medium">
-                            {activeTab === 'settings' ? 'Gestiona tu competencia y datos estratégicos.' :
-                                activeTab === 'billing' ? 'Administra tu plan y facturación.' :
-                                    'Tus reportes estratégicos están listos.'}
-                        </p>
-                    </div>
-                    {activeTab === 'home' && (
-                        <div className="flex items-center gap-3 bg-white px-6 py-4 rounded-2xl shadow-soft border border-gray-100 animate-in fade-in slide-in-from-right-4 duration-500">
-                            <div className="p-2 bg-zylo-purpleLight text-zylo-purple rounded-xl">
-                                <Clock size={20} />
+            <main className="flex-1 p-4 md:p-8 lg:p-12 transition-all duration-500 bg-[#FAFAFA]">
+                <div className="max-w-7xl mx-auto">
+                    {/* Welcome Header */}
+                    <header className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 mb-12">
+                        <div className="animate-in fade-in slide-in-from-left-6 duration-700">
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="px-3 py-1 bg-zylo-purpleLight/40 backdrop-blur-md rounded-full border border-zylo-purple/10">
+                                    <span className="text-[10px] font-black text-zylo-purple uppercase tracking-[0.2em]">
+                                        {activeTab === 'home' ? 'Resumen Estratégico' : activeTab === 'settings' ? 'Centro de Configuración' : 'Suscripción Pro'}
+                                    </span>
+                                </div>
+                                <div className="h-1 w-8 bg-gray-200 rounded-full"></div>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}</span>
                             </div>
-                            <div className="text-left">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Próximo Reporte</p>
-                                <p className="text-sm font-bold text-zylo-black">
-                                    {daysUntilNextReport !== null ? `en ${daysUntilNextReport} días` : 'Calculando...'}
-                                </p>
+                            <h1 className="text-4xl md:text-6xl font-black text-zylo-black tracking-tight leading-[0.9] mb-4">
+                                {activeTab === 'home' ? (
+                                    <>¡Bienvenido, <span className="text-transparent bg-clip-text bg-gradient-to-r from-zylo-purple via-zylo-purple to-zylo-black">{clientInfo?.full_name?.split(' ')[0] || 'Cero'}</span>! 👋</>
+                                ) : activeTab === 'settings' ? 'Tus Ajustes' : 'Tu Cuenta'}
+                            </h1>
+                            <p className="text-gray-500 font-medium text-sm md:text-lg max-w-xl leading-relaxed">
+                                {activeTab === 'home'
+                                    ? "Acá tenés una vista panorámica de cómo tu marca está dominando el algoritmo."
+                                    : activeTab === 'settings'
+                                        ? "Personalizá cada detalle estratégico para que tu IA aprenda más rápido."
+                                        : "Gestioná tus pagos y mantené tu cuenta siempre activa para no detener el flujo."}
+                            </p>
+                        </div>
+
+                        {activeTab === 'home' && daysUntilNextReport !== null && (
+                            <div className="animate-in fade-in slide-in-from-right-6 duration-700 relative group overflow-hidden bg-white p-6 rounded-[2.5rem] shadow-glass border border-white flex items-center gap-8 transition-all hover:shadow-2xl">
+                                <div className="relative w-24 h-24 flex items-center justify-center">
+                                    <svg className="w-full h-full -rotate-90">
+                                        <circle
+                                            cx="48" cy="48" r="42"
+                                            fill="transparent"
+                                            stroke="#F3F4F6"
+                                            strokeWidth="8"
+                                        />
+                                        <circle
+                                            cx="48" cy="48" r="42"
+                                            fill="transparent"
+                                            stroke="url(#purple_gradient)"
+                                            strokeWidth="8"
+                                            strokeDasharray={263.89}
+                                            strokeDashoffset={263.89 - (263.89 * (15 - (daysUntilNextReport || 0))) / 15}
+                                            strokeLinecap="round"
+                                            className="transition-all duration-1000 ease-in-out"
+                                        />
+                                        <defs>
+                                            <linearGradient id="purple_gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stopColor="#8A2BE2" />
+                                                <stop offset="100%" stopColor="#4169E1" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                    <div className="absolute flex flex-col items-center">
+                                        <span className="text-2xl font-black text-zylo-black leading-none">{daysUntilNextReport}</span>
+                                        <span className="text-[8px] font-black text-gray-400 uppercase">Días</span>
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Próxima Ola Viral</h3>
+                                    <p className="text-xl font-bold text-zylo-black">
+                                        {daysUntilNextReport === 1 ? '¡Mañana mismo!' : `Lanza en ${daysUntilNextReport} días`}
+                                    </p>
+                                    <div className="flex items-center gap-2 group-hover:gap-3 transition-all cursor-pointer">
+                                        <span className="text-[10px] font-black text-zylo-purple uppercase tracking-widest">Ver Detalles</span>
+                                        <ArrowUpRight size={14} className="text-zylo-purple" />
+                                    </div>
+                                </div>
+                                {/* Subtle Glow Background */}
+                                <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-zylo-purple/5 blur-[50px] rounded-full"></div>
+                            </div>
+                        )}
+                    </header>
+
+                    {activeTab === 'home' && (
+                        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+                            {/* Stats Grid AAA */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                {[
+                                    { label: 'Reportes Listos', val: reports.length, icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50', sub: 'Estrategias generadas' },
+                                    { label: 'Nicho Estratégico', val: clientInfo?.industry || '...', icon: Target, color: 'text-zylo-purple', bg: 'bg-zylo-purpleLight/50', sub: 'Tu foco actual' },
+                                    { label: 'Status Cuenta', val: 'PRO', icon: Award, color: 'text-zylo-yellow', bg: 'bg-zylo-yellow/10', sub: 'Acceso total habilitado' }
+                                ].map((stat, i) => (
+                                    <div key={i} className="group relative bg-white p-10 rounded-[3rem] shadow-glass border border-white/50 transition-all hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
+                                        <div className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
+                                            <stat.icon size={28} />
+                                        </div>
+                                        <h3 className="text-gray-400 text-xs font-black uppercase tracking-[0.2em] mb-2">{stat.label}</h3>
+                                        <div className="text-4xl font-black text-zylo-black tracking-tight mb-2 uppercase break-words">{stat.val}</div>
+                                        <p className="text-gray-400 text-xs font-medium">{stat.sub}</p>
+                                        <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-10 transition-opacity">
+                                            <TrendingUp size={60} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Enhanced History Table */}
+                            <div className="bg-white/70 backdrop-blur-xl rounded-[3.5rem] shadow-glass border border-white overflow-hidden p-4 md:p-10">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 px-2">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-2 h-10 bg-zylo-purple rounded-full"></div>
+                                        <div>
+                                            <h2 className="text-2xl md:text-3xl font-black text-zylo-black tracking-tight">Historial Viral</h2>
+                                            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Tus armas secretas de contenido</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative">
+                                            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                                            <input
+                                                type="text"
+                                                placeholder="Buscar por fecha..."
+                                                className="pl-12 pr-6 py-4 bg-gray-50/50 border border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all w-full md:w-64"
+                                            />
+                                        </div>
+                                        <button className="p-4 bg-gray-50/50 rounded-2xl text-gray-400 hover:text-zylo-purple hover:bg-white transition-all">
+                                            <Filter size={20} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="px-6 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Estrategia</th>
+                                                <th className="px-6 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Nicho</th>
+                                                <th className="px-6 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Estado</th>
+                                                <th className="px-6 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50/50">
+                                            {reports.map((report) => {
+                                                const dateStr = new Date(report.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+                                                const isReady = report.status === 'ready' || report.final_slide_url;
+                                                return (
+                                                    <tr key={report.id} className="group hover:bg-white/80 transition-all cursor-pointer">
+                                                        <td className="px-6 py-8">
+                                                            <div className="flex items-center gap-5">
+                                                                <div className={`w-14 h-14 rounded-3xl flex items-center justify-center transition-all group-hover:scale-110 group-hover:rotate-3 ${isReady ? 'bg-zylo-purpleLight/50 text-zylo-purple' : 'bg-gray-100 text-gray-300'}`}>
+                                                                    <Sparkle size={24} />
+                                                                </div>
+                                                                <div>
+                                                                    <div className="text-lg font-bold text-zylo-black leading-tight">Reporte Estratégico</div>
+                                                                    <div className="text-xs text-gray-400 font-bold uppercase tracking-widest">{dateStr}</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-8">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="px-4 py-1.5 bg-gray-100 rounded-full text-[10px] font-black uppercase text-gray-500 group-hover:bg-zylo-black group-hover:text-white transition-colors">{report.niche || 'General'}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-8">
+                                                            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-transparent ${isReady ? 'bg-zylo-green/10 text-zylo-green' : 'bg-amber-400/10 text-amber-500'} group-hover:border-current transition-all animate-pulse`}>
+                                                                <div className={`w-1.5 h-1.5 rounded-full ${isReady ? 'bg-zylo-green' : 'bg-amber-500'}`}></div>
+                                                                {isReady ? 'Listo para detonar' : 'Procesando IA'}
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-8 text-right">
+                                                            {isReady ? (
+                                                                <a
+                                                                    href={report.final_slide_url || '#'}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="inline-flex items-center gap-3 px-6 py-3.5 bg-zylo-black text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-zylo-purple hover:scale-105 active:scale-95 shadow-xl transition-all"
+                                                                >
+                                                                    Ver Reporte <ArrowUpRight size={14} />
+                                                                </a>
+                                                            ) : (
+                                                                <div className="inline-flex items-center gap-2 px-6 py-3.5 bg-gray-50 text-gray-300 text-[10px] font-black uppercase tracking-widest rounded-2xl">
+                                                                    Generando <Clock size={14} className="animate-spin" />
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     )}
-                </header>
 
-                {activeTab === 'home' && (
-                    <>
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 lg:mb-12">
-                            <div className="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex items-center gap-4">
-                                <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl">
-                                    <FileText size={22} />
-                                </div>
-                                <div>
-                                    <h3 className="text-2xl font-black text-zylo-black">{reports.length}</h3>
-                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Reportes</p>
-                                </div>
-                            </div>
-
-                            <div className="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex items-center gap-4">
-                                <div className="p-3.5 bg-green-50 text-green-600 rounded-2xl">
-                                    <Clock size={22} />
-                                </div>
-                                <div>
-                                    <h3 className="text-2xl font-black text-zylo-black">{(reports.length * 2.5).toFixed(0)}h</h3>
-                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Estrés evitado</p>
-                                </div>
-                            </div>
-
-                            <div className="bg-zylo-black p-6 rounded-3xl shadow-xl border border-gray-900 text-white flex items-center gap-4 relative overflow-hidden sm:col-span-2 lg:col-span-1">
-                                <div className="p-3.5 bg-white/10 text-white rounded-2xl relative z-10">
-                                    <Zap size={22} />
-                                </div>
-                                <div className="relative z-10 overflow-hidden">
-                                    <h3 className="text-xl font-black truncate max-w-[150px]">{clientInfo?.industry || "..."}</h3>
-                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tu Industria</p>
-                                </div>
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-zylo-purple opacity-20 blur-2xl rounded-full translate-x-1/2 -translate-y-1/2"></div>
-                            </div>
-                        </div>
-
-                        {/* Reports History */}
-                        <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-card border border-gray-100 overflow-hidden">
-                            <div className="p-6 md:p-8 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                <h2 className="text-lg md:text-xl font-extrabold text-zylo-black">Historial Estratégico</h2>
-
-                                <div className="flex items-center gap-2">
-                                    <div className="relative flex-1 sm:flex-initial">
-                                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                                        <input
-                                            type="text"
-                                            placeholder="Buscar reporte..."
-                                            className="w-full pl-11 pr-4 py-3 bg-gray-50 rounded-2xl text-sm font-medium outline-none border border-transparent focus:border-gray-200 transition-all"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Content: Mobile Cards vs Desktop Table */}
-                            <div className="block md:hidden">
-                                {loading ? (
-                                    <div className="p-10 text-center"><Loader2 className="animate-spin inline-block mr-2" /> Cargando...</div>
-                                ) : reports.length === 0 ? (
-                                    <div className="p-10 text-center text-gray-400">Sin reportes aún.</div>
-                                ) : (
-                                    <div className="divide-y divide-gray-50">
-                                        {reports.map((report) => {
-                                            const styles = getStatusStyles(report.status);
-                                            const displayTitle = report.niche ? `Estrategia ${report.niche}` : "Reporte Viral";
-                                            return (
-                                                <div
-                                                    key={report.id}
-                                                    onClick={() => onNavigate('report', report.id)}
-                                                    className="p-6 active:bg-gray-50 flex flex-col gap-4 cursor-pointer"
-                                                >
-                                                    <div className="flex justify-between items-start">
-                                                        <div className="flex gap-3">
-                                                            <div className="w-10 h-10 rounded-xl bg-purple-50 text-zylo-purple flex items-center justify-center shrink-0">
-                                                                <FileText size={18} />
-                                                            </div>
-                                                            <div>
-                                                                <h4 className="font-bold text-gray-900 leading-tight line-clamp-1">{displayTitle}</h4>
-                                                                <p className="text-xs text-gray-400 font-medium">{formatDate(report.created_at)}</p>
-                                                            </div>
-                                                        </div>
-                                                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${styles.bg} ${styles.text}`}>
-                                                            {styles.label}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Desktop View - Table */}
-                            <div className="hidden md:block overflow-x-auto">
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="bg-gray-50/30 border-b border-gray-50">
-                                            <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Estrategia</th>
-                                            <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha</th>
-                                            <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Estado</th>
-                                            <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                        {loading ? (
-                                            <tr>
-                                                <td colSpan={4} className="p-12 text-center text-gray-400">
-                                                    <Loader2 className="animate-spin inline-block" /> Cargando...
-                                                </td>
-                                            </tr>
-                                        ) : reports.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={4} className="p-12 text-center text-gray-400">
-                                                    No hay reportes.
-                                                </td>
-                                            </tr>
-                                        ) : reports.map((report) => {
-                                            const styles = getStatusStyles(report.status);
-                                            return (
-                                                <tr
-                                                    key={report.id}
-                                                    onClick={() => onNavigate('report', report.id)}
-                                                    className="group hover:bg-gray-50 transition-colors cursor-pointer"
-                                                >
-                                                    <td className="p-6">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-zylo-purpleLight group-hover:text-zylo-purple transition-all">
-                                                                <FileText size={18} />
-                                                            </div>
-                                                            <span className="font-bold text-gray-900 capitalize">
-                                                                {report.niche ? `Estrategia ${report.niche}` : 'Reporte Viral'}
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-6 text-sm text-gray-500 font-medium">
-                                                        {formatDate(report.created_at)}
-                                                    </td>
-                                                    <td className="p-6">
-                                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${styles.bg} ${styles.text}`}>
-                                                            <span className={`w-1.5 h-1.5 rounded-full ${styles.dot}`}></span>
-                                                            {styles.label}
-                                                        </span>
-                                                    </td>
-                                                    <td className="p-6 text-right">
-                                                        <div className="flex justify-end gap-2 text-gray-300">
-                                                            {report.final_slide_url && (
-                                                                <a
-                                                                    href={report.final_slide_url}
-                                                                    target="_blank"
-                                                                    rel="noreferrer"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    className="p-2 rounded-xl text-blue-500 hover:bg-blue-50 transition-colors"
-                                                                >
-                                                                    <ExternalLink size={18} />
-                                                                </a>
-                                                            )}
-                                                            <div className="p-2 rounded-xl group-hover:text-zylo-purple transition-colors">
-                                                                <ChevronRight size={20} />
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </>
-                )}
-
-                {activeTab === 'settings' && (
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {/* Profile Info */}
-                        <div className="xl:col-span-2 space-y-8">
-                            <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-100 flex flex-col gap-8">
-                                <h2 className="text-xl font-extrabold text-zylo-black flex items-center gap-2">
-                                    <Zap size={20} className="text-zylo-purple" /> Esencia de Marca
-                                </h2>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1">Nombre Comercial</label>
-                                        <input
-                                            type="text"
-                                            value={editData?.company_name || ''}
-                                            onChange={(e) => setEditData({ ...editData, company_name: e.target.value })}
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none transition-all font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1">Rubro Principal</label>
-                                        <select
-                                            value={editData?.industry || ''}
-                                            onChange={(e) => setEditData({ ...editData, industry: e.target.value })}
-                                            className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none appearance-none font-bold"
-                                        >
-                                            <option value="">Seleccionar...</option>
-                                            <option value="Real Estate">Inmobiliaria</option>
-                                            <option value="Fitness">Fitness & Salud</option>
-                                            <option value="Ecommerce">E-commerce</option>
-                                            <option value="Professional Services">Servicios Profesionales</option>
-                                            <option value="Other">Otro</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-6 pt-4 border-t border-gray-50">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
-                                                <Mic2 size={12} className="text-zylo-purple" /> Tono de Voz
-                                            </label>
-                                            <select
-                                                value={editData?.brand_tone || ''}
-                                                onChange={(e) => setEditData({ ...editData, brand_tone: e.target.value })}
-                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none appearance-none font-bold"
-                                            >
-                                                <option value="">Seleccionar...</option>
-                                                <option value="Friendly">Amigable y Cercano</option>
-                                                <option value="Professional">Profesional y Autoritario</option>
-                                                <option value="Disruptive">Provocador y Directo</option>
-                                                <option value="Scientific">Educativo y Basado en Datos</option>
-                                            </select>
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
-                                                <Target size={12} className="text-zylo-green" /> Objetivo Viral
-                                            </label>
-                                            <select
-                                                value={editData?.goal || ''}
-                                                onChange={(e) => setEditData({ ...editData, goal: e.target.value })}
-                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none appearance-none font-bold"
-                                            >
-                                                <option value="">Seleccionar...</option>
-                                                <option value="Ventas">Generar Ventas</option>
-                                                <option value="Seguidores">Crecer Audiencia</option>
-                                                <option value="Autoridad">Marca Personal / Autoridad</option>
-                                            </select>
-                                        </div>
+                    {activeTab === 'settings' && (
+                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 items-start">
+                            {/* Main Settings Area */}
+                            <div className="xl:col-span-2 space-y-12">
+                                {/* Section: Identity */}
+                                <div className="bg-white/70 backdrop-blur-xl p-10 md:p-12 rounded-[3.5rem] shadow-glass border border-white space-y-10">
+                                    <div>
+                                        <h2 className="text-2xl font-black text-zylo-black tracking-tight mb-2">Identidad de Marca</h2>
+                                        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Lo que define el alma de tu contenido</p>
                                     </div>
 
-                                    <div className="space-y-6 pt-4 border-t border-gray-50">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1.5">
-                                                <Eye size={14} className="text-blue-500" /> ¿Qué piensan tus seguidores de vos hoy?
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nombre Comercial</label>
+                                            <input
+                                                type="text"
+                                                value={editData?.company_name || ''}
+                                                onChange={(e) => setEditData({ ...editData, company_name: e.target.value })}
+                                                className="w-full bg-gray-50/50 border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-[1.5rem] px-6 py-5 text-base outline-none transition-all font-bold placeholder:text-gray-300 shadow-sm"
+                                                placeholder="Tu marca..."
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Rubro Principal</label>
+                                            <div className="relative">
+                                                <select
+                                                    value={editData?.industry || ''}
+                                                    onChange={(e) => setEditData({ ...editData, industry: e.target.value })}
+                                                    className="w-full bg-gray-50/50 border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-[1.5rem] px-6 py-5 text-base outline-none appearance-none font-bold shadow-sm"
+                                                >
+                                                    <option value="">Seleccionar...</option>
+                                                    <option value="Real Estate">Inmobiliaria</option>
+                                                    <option value="Fitness">Fitness & Salud</option>
+                                                    <option value="Ecommerce">E-commerce</option>
+                                                    <option value="Professional Services">Servicios Profesionales</option>
+                                                    <option value="Other">Otro</option>
+                                                </select>
+                                                <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <ChevronDown size={18} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-gray-100">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                                <Mic2 size={14} className="text-zylo-purple" /> Tono de Voz
+                                            </label>
+                                            <div className="relative">
+                                                <select
+                                                    value={editData?.brand_tone || ''}
+                                                    onChange={(e) => setEditData({ ...editData, brand_tone: e.target.value })}
+                                                    className="w-full bg-gray-50/50 border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-[1.5rem] px-6 py-5 text-base outline-none appearance-none font-bold shadow-sm"
+                                                >
+                                                    <option value="">Seleccionar...</option>
+                                                    <option value="Friendly">Amigable y Cercano</option>
+                                                    <option value="Professional">Profesional y Autoritario</option>
+                                                    <option value="Disruptive">Provocador y Directo</option>
+                                                    <option value="Scientific">Educativo y Basado en Datos</option>
+                                                </select>
+                                                <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <ChevronDown size={18} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                                <Target size={14} className="text-zylo-green" /> Objetivo Viral
+                                            </label>
+                                            <div className="relative">
+                                                <select
+                                                    value={editData?.goal || ''}
+                                                    onChange={(e) => setEditData({ ...editData, goal: e.target.value })}
+                                                    className="w-full bg-gray-50/50 border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-[1.5rem] px-6 py-5 text-base outline-none appearance-none font-bold shadow-sm"
+                                                >
+                                                    <option value="">Seleccionar...</option>
+                                                    <option value="Ventas">Generar Ventas</option>
+                                                    <option value="Seguidores">Crecer Audiencia</option>
+                                                    <option value="Autoridad">Marca Personal / Autoridad</option>
+                                                </select>
+                                                <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                    <ChevronDown size={18} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Section: Content Strategy */}
+                                <div className="bg-white/70 backdrop-blur-xl p-10 md:p-12 rounded-[3.5rem] shadow-glass border border-white space-y-10">
+                                    <div>
+                                        <h2 className="text-2xl font-black text-zylo-black tracking-tight mb-2">Estrategia de Contenido</h2>
+                                        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Lo que le dice a la IA cómo pensar</p>
+                                    </div>
+
+                                    <div className="space-y-8">
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                                <Eye size={16} className="text-blue-500" /> Percepción Actual
                                             </label>
                                             <textarea
                                                 value={editData?.brand_perception || ''}
                                                 onChange={(e) => setEditData({ ...editData, brand_perception: e.target.value })}
-                                                rows={2}
+                                                rows={3}
                                                 placeholder="Ej: Siento que me ven demasiado técnico..."
-                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-2xl px-5 py-4 text-base outline-none resize-none font-medium leading-relaxed"
+                                                className="w-full bg-gray-50/50 border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-[2rem] px-8 py-6 text-base outline-none resize-none font-medium leading-relaxed shadow-sm transition-all"
                                             />
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1.5">
-                                                <Sparkles size={14} className="text-zylo-yellow" /> ¿Qué te gustaría que piensen?
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                                <Sparkles size={16} className="text-zylo-yellow" /> Aspiración de Marca
                                             </label>
                                             <textarea
                                                 value={editData?.brand_aspiration || ''}
                                                 onChange={(e) => setEditData({ ...editData, brand_aspiration: e.target.value })}
-                                                rows={2}
+                                                rows={3}
                                                 placeholder="Ej: Quiero que sientan que soy la autoridad número 1..."
-                                                className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-2xl px-5 py-4 text-base outline-none resize-none font-medium leading-relaxed"
+                                                className="w-full bg-gray-50/50 border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-[2rem] px-8 py-6 text-base outline-none resize-none font-medium leading-relaxed shadow-sm transition-all"
                                             />
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
-                                                    <HeartHandshake size={12} className="text-red-400" /> Problema Principal
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                                    <HeartHandshake size={16} className="text-red-400" /> Dolor del Cliente
                                                 </label>
                                                 <input
                                                     type="text"
                                                     value={editData?.target_pain_point || ''}
                                                     onChange={(e) => setEditData({ ...editData, target_pain_point: e.target.value })}
-                                                    placeholder="Ej. Les cuesta ahorrar..."
-                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none font-medium"
+                                                    placeholder="Ej. No llegan a fin de mes..."
+                                                    className="w-full bg-gray-50/50 border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-[1.5rem] px-6 py-5 text-base outline-none transition-all font-bold placeholder:text-gray-300 shadow-sm"
                                                 />
                                             </div>
-                                            <div className="space-y-1.5">
-                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1 flex items-center gap-1">
-                                                    <Star size={12} className="text-zylo-yellow" /> Diferencial Único
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                                    <Star size={16} className="text-zylo-yellow" /> Tu Diferencial (USP)
                                                 </label>
                                                 <input
                                                     type="text"
                                                     value={editData?.usp || ''}
                                                     onChange={(e) => setEditData({ ...editData, usp: e.target.value })}
-                                                    placeholder="Ej. Resultados rápidos..."
-                                                    className="w-full bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-xl px-4 py-4 text-base outline-none font-medium"
+                                                    placeholder="Ej. Resultados en 30 días..."
+                                                    className="w-full bg-gray-50/50 border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-[1.5rem] px-6 py-5 text-base outline-none transition-all font-bold placeholder:text-gray-300 shadow-sm"
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1">Formatos de Video</label>
-                                            <div className="flex flex-wrap gap-2.5">
+                                        <div className="space-y-4 pt-6">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Formatos de Video Preferidos</label>
+                                            <div className="flex flex-wrap gap-3">
                                                 {['Cara a cámara', 'Narrado con stock/B-roll', 'Tutorial de pantalla', 'Voz en off con texto', 'POV / Lifestyle'].map((format) => {
                                                     const isSelected = editData?.video_formats?.includes(format);
                                                     return (
@@ -617,10 +629,9 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                                                     : [...current, format];
                                                                 setEditData({ ...editData, video_formats: next });
                                                             }}
-                                                            className={`px-4 py-3 rounded-full text-[10px] font-bold border-2 transition-all active:scale-95 ${isSelected ? 'bg-zylo-black text-white border-zylo-black' : 'bg-white text-gray-400 border-gray-100 hover:border-gray-200 shadow-sm'
-                                                                }`}
+                                                            className={`px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest border-2 transition-all active:scale-95 flex items-center gap-2 ${isSelected ? 'bg-zylo-black text-white border-zylo-black shadow-lg scale-105' : 'bg-white text-gray-400 border-gray-100 hover:border-zylo-purple/20 hover:text-zylo-purple shadow-sm'}`}
                                                         >
-                                                            {format} {isSelected && <CheckCircle size={10} className="inline ml-1" />}
+                                                            {format} {isSelected && <CheckCircle size={14} />}
                                                         </button>
                                                     );
                                                 })}
@@ -629,149 +640,181 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Competitors & Actions */}
-                        <div className="space-y-8">
-                            <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-100 flex flex-col h-fit">
-                                <h2 className="text-xl font-extrabold text-zylo-black flex items-center gap-2 mb-6">
-                                    <BarChart3 size={20} className="text-zylo-purple" /> Competencia
-                                </h2>
-                                <p className="text-sm text-gray-500 mb-6">Agregá los perfiles que querés que HookBase analice para tus reportes.</p>
-
-                                <div className="space-y-6">
-                                    <div className="flex flex-wrap gap-2">
-                                        {editData?.competitors.map((comp: string, idx: number) => (
-                                            <div key={idx} className="flex items-center gap-2 bg-zylo-purpleLight/50 text-zylo-purple px-4 py-2 rounded-full text-sm font-bold">
-                                                @{comp}
-                                                <button
-                                                    onClick={() => setEditData({ ...editData, competitors: editData.competitors.filter((_: any, i: number) => i !== idx) })}
-                                                    className="hover:text-red-500 transition-colors"
-                                                >
-                                                    <X size={14} />
-                                                </button>
-                                            </div>
-                                        ))}
-                                        {editData?.competitors.length === 0 && (
-                                            <p className="text-xs text-gray-400 italic">No hay competidores agregados.</p>
-                                        )}
+                            {/* Sidebar Settings: Competitors & Account */}
+                            <div className="space-y-12">
+                                {/* Competitors Card */}
+                                <div className="bg-white/70 backdrop-blur-xl p-10 rounded-[3.5rem] shadow-glass border border-white space-y-8">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-zylo-purpleLight/50 text-zylo-purple rounded-xl flex items-center justify-center">
+                                            <BarChart3 size={20} />
+                                        </div>
+                                        <h2 className="text-xl font-black text-zylo-black tracking-tight">Competencia</h2>
                                     </div>
 
-                                    <div className="relative pt-4 border-t border-gray-50">
-                                        <input
-                                            type="text"
-                                            placeholder="Ej: nicolasgalli"
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    const val = (e.currentTarget.value).trim().replace('@', '');
-                                                    if (val && !editData.competitors.includes(val)) {
-                                                        setEditData({ ...editData, competitors: [...editData.competitors, val] });
-                                                        e.currentTarget.value = '';
-                                                    }
-                                                }
-                                            }}
-                                            className="w-full pl-5 pr-14 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                        />
-                                        <div className="absolute right-4 top-[2.4rem] text-[10px] font-black text-gray-300 uppercase">Enter</div>
-                                    </div>
-                                </div>
-                            </div>
+                                    <div className="space-y-6">
+                                        <div className="flex flex-wrap gap-2 min-h-[50px]">
+                                            {editData?.competitors.map((comp: string, idx: number) => (
+                                                <div key={idx} className="flex items-center gap-2 bg-zylo-black text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest animate-in zoom-in duration-300">
+                                                    @{comp}
+                                                    <button
+                                                        onClick={() => setEditData({ ...editData, competitors: editData.competitors.filter((_: any, i: number) => i !== idx) })}
+                                                        className="hover:text-red-400 transition-colors"
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            {editData?.competitors.length === 0 && (
+                                                <div className="w-full py-8 text-center border-2 border-dashed border-gray-100 rounded-3xl">
+                                                    <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest italic">Sin competencia</p>
+                                                </div>
+                                            )}
+                                        </div>
 
-                            <button
-                                onClick={handleSaveSettings}
-                                disabled={isSavingSettings}
-                                className="w-full bg-zylo-black text-white py-6 rounded-full font-bold shadow-xl hover:bg-gray-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                            >
-                                {isSavingSettings ? <Loader2 className="animate-spin" size={24} /> : <Zap size={24} fill="currentColor" />}
-                                <span className="text-lg">{isSavingSettings ? 'Guardando...' : 'Guardar Datos Estratégicos'}</span>
-                            </button>
-
-                            {/* Account Settings */}
-                            <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-200 flex flex-col h-fit mt-8 border-dashed">
-                                <h2 className="text-xl font-extrabold text-zylo-black flex items-center gap-2 mb-6">
-                                    <Lock size={20} className="text-gray-400" /> Configuración de Cuenta
-                                </h2>
-
-                                <div className="space-y-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1">Nueva Contraseña</label>
                                         <div className="relative">
                                             <input
-                                                type="password"
-                                                value={newPassword}
-                                                onChange={(e) => setNewPassword(e.target.value)}
-                                                placeholder="••••••••"
-                                                className="w-full pl-5 pr-14 py-4 bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-2xl text-base outline-none transition-all font-medium"
+                                                type="text"
+                                                placeholder="Ej: nicolasgalli"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        const val = (e.currentTarget.value).trim().replace('@', '');
+                                                        if (val && !editData.competitors.includes(val)) {
+                                                            setEditData({ ...editData, competitors: [...editData.competitors, val] });
+                                                            e.currentTarget.value = '';
+                                                        }
+                                                    }
+                                                }}
+                                                className="w-full pl-6 pr-14 py-5 bg-gray-50/50 rounded-2xl border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white outline-none font-bold transition-all text-sm"
                                             />
-                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
-                                                <Key size={18} />
-                                            </div>
+                                            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[9px] font-black text-gray-300 border border-gray-200 px-2 py-0.5 rounded uppercase tracking-tighter">Enter</div>
                                         </div>
                                     </div>
+                                </div>
 
+                                {/* Security/Account Card */}
+                                <div className="bg-white/70 backdrop-blur-xl p-10 rounded-[3.5rem] shadow-glass border border-white space-y-8 border-dashed">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-gray-100 text-gray-400 rounded-xl flex items-center justify-center">
+                                            <Lock size={20} />
+                                        </div>
+                                        <h2 className="text-xl font-black text-zylo-black tracking-tight">Seguridad</h2>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nueva Contraseña</label>
+                                            <div className="relative">
+                                                <input
+                                                    type="password"
+                                                    value={newPassword}
+                                                    onChange={(e) => setNewPassword(e.target.value)}
+                                                    placeholder="••••••••"
+                                                    className="w-full pl-6 pr-14 py-5 bg-gray-50/50 border-2 border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-2xl text-base outline-none transition-all font-bold placeholder:text-gray-200"
+                                                />
+                                                <div className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-300">
+                                                    <Key size={18} />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={handleUpdatePassword}
+                                            disabled={isUpdatingPassword || !newPassword}
+                                            className="w-full py-5 rounded-[1.8rem] font-black text-[10px] uppercase tracking-[0.2em] bg-white border-2 border-gray-100 text-gray-400 hover:border-zylo-purple hover:text-zylo-purple hover:bg-zylo-purple/5 transition-all flex items-center justify-center gap-3 disabled:opacity-30 disabled:scale-100 active:scale-95"
+                                        >
+                                            {isUpdatingPassword ? <Loader2 className="animate-spin" size={18} /> : <ShieldCheck size={18} />}
+                                            Actualizar Acceso
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Floating Save Button AAA */}
+                                <div className="sticky bottom-10 z-20">
                                     <button
-                                        onClick={handleUpdatePassword}
-                                        disabled={isUpdatingPassword || !newPassword}
-                                        className="w-full py-4 rounded-2xl font-bold bg-white border-2 border-gray-100 text-gray-600 hover:border-zylo-purple hover:text-zylo-purple transition-all flex items-center justify-center gap-2 disabled:opacity-30"
+                                        onClick={handleSaveSettings}
+                                        disabled={isSavingSettings}
+                                        className="w-full group bg-zylo-black text-white py-8 rounded-[2.5rem] font-black text-sm uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-zylo-purple/40 hover:bg-zylo-purple transition-all duration-500 flex items-center justify-center gap-4 disabled:opacity-50 overflow-hidden relative"
                                     >
-                                        {isUpdatingPassword ? <Loader2 className="animate-spin" size={18} /> : <Lock size={18} />}
-                                        Cambiar Contraseña
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                                        {isSavingSettings ? <Loader2 className="animate-spin" size={24} /> : <Sparkle size={24} className="group-hover:rotate-180 transition-transform duration-700" />}
+                                        <span className="relative z-10">{isSavingSettings ? 'Guardando...' : 'Detonar Cambios'}</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {activeTab === 'billing' && (
-                    <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-100 space-y-10">
-                            <div className="text-center space-y-4">
-                                <div className="mx-auto w-20 h-20 bg-zylo-purpleLight text-zylo-purple rounded-[2rem] flex items-center justify-center shadow-soft">
-                                    <Zap size={32} fill="currentColor" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-black text-zylo-black tracking-tight">HookBase Pro</h2>
-                                    <p className="text-gray-500 font-medium">Suscripción Mensual Activa</p>
-                                </div>
-                            </div>
+                    {activeTab === 'billing' && (
+                        <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                            <div className="relative overflow-hidden bg-zylo-black rounded-[4rem] shadow-2xl p-1 md:p-1.5">
+                                {/* Decorative Gradient */}
+                                <div className="absolute -top-24 -right-24 w-96 h-96 bg-zylo-purple/30 blur-[100px] rounded-full"></div>
+                                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-zylo-purple/20 blur-[100px] rounded-full"></div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-gray-50 p-6 rounded-3xl space-y-1">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Precio</p>
-                                    <p className="text-lg font-bold text-zylo-black">$10.000 / mes</p>
-                                </div>
-                                <div className="bg-gray-50 p-6 rounded-3xl space-y-1">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Próximo Pago</p>
-                                    <p className="text-lg font-bold text-zylo-black">
-                                        {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleDateString('es-ES', { day: '2-digit', month: 'long' })}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="bg-zylo-purple/5 border border-zylo-purple/10 p-6 rounded-3xl flex items-start gap-4">
-                                    <div className="p-2 bg-zylo-purple text-white rounded-xl">
-                                        <Clock size={20} />
+                                <div className="relative bg-white/5 backdrop-blur-2xl rounded-[3.8rem] p-10 md:p-16 border border-white/10 flex flex-col items-center text-center">
+                                    <div className="w-24 h-24 bg-gradient-to-tr from-zylo-purple via-zylo-purple to-zylo-purpleLight rounded-[2.5rem] flex items-center justify-center shadow-[0_0_50px_rgba(138,43,226,0.3)] mb-10 group hover:scale-110 transition-transform duration-500">
+                                        <Award size={48} className="text-white animate-pulse" />
                                     </div>
-                                    <div>
-                                        <h4 className="font-bold text-zylo-purple">¿Necesitás darte de baja?</h4>
-                                        <p className="text-sm text-zylo-purple/70 font-medium mt-1">Podés gestionar o cancelar tu suscripción directamente desde Mercado Pago. El cobro se realiza automáticamente cada día 1 de mes.</p>
+
+                                    <div className="space-y-4 mb-12">
+                                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-zylo-purple/20 rounded-full border border-zylo-purple/20">
+                                            <span className="w-2 h-2 rounded-full bg-zylo-purple animate-ping"></span>
+                                            <span className="text-[10px] font-black text-zylo-purpleLight uppercase tracking-[0.2em]">Suscripción Activa</span>
+                                        </div>
+                                        <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-none">HookBase <span className="text-transparent bg-clip-text bg-gradient-to-r from-zylo-purpleLight to-white">PRO</span></h2>
+                                        <p className="text-gray-400 text-lg font-medium max-w-sm">Tenés acceso ilimitado a toda la potencia de nuestra IA generativa.</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-xl mb-12">
+                                        <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] text-left group hover:bg-white/10 transition-colors">
+                                            <p className="text-[10px] font-black text-zylo-purpleLight uppercase tracking-widest mb-2">Inversión Mensual</p>
+                                            <div className="flex items-baseline gap-1">
+                                                <span className="text-3xl font-black text-white">$10.000</span>
+                                                <span className="text-sm font-bold text-gray-500">/mes</span>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] text-left group hover:bg-white/10 transition-colors">
+                                            <p className="text-[10px] font-black text-zylo-purpleLight uppercase tracking-widest mb-2">Próxima Renovación</p>
+                                            <div className="text-3xl font-black text-white">
+                                                {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="w-full max-w-xl space-y-6">
+                                        <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex items-center gap-6 text-left">
+                                            <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-white shrink-0">
+                                                <ShieldCheck size={28} />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-white text-lg">Seguridad Mercado Pago</h4>
+                                                <p className="text-gray-400 text-sm font-medium">Tus pagos están protegidos. Podés cancelar en cualquier momento desde tu panel de MP.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col sm:flex-row gap-4">
+                                            <a
+                                                href="https://www.mercadopago.com.ar/subscriptions#from-section=menu"
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="flex-1 py-5 bg-white text-zylo-black rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-zylo-purple hover:text-white transition-all text-center shadow-xl hover:shadow-zylo-purple/20"
+                                            >
+                                                Gestionar Pagos
+                                            </a>
+                                            <button
+                                                className="px-10 py-5 bg-white/5 text-gray-400 rounded-3xl font-black text-xs uppercase tracking-widest border border-white/10 hover:bg-white/10 hover:text-white transition-all"
+                                                onClick={() => alert("Comunícate con soporte para soporte prioritario Pro.")}
+                                            >
+                                                Soporte VIP
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <a
-                                    href="https://www.mercadopago.com.ar/subscriptions#from-section=menu"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="w-full block py-4 rounded-full font-bold text-red-500 border-2 border-red-50 hover:bg-red-50 transition-all text-center"
-                                >
-                                    Gestionar Suscripción
-                                </a>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </main>
         </div>
     );
