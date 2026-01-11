@@ -4,11 +4,11 @@ import { HookIdea, ToneType } from "../types";
 
 export const generateViralHooks = async (topic: string, tone: ToneType): Promise<HookIdea[]> => {
   // Always create a new instance with the latest key as per guidelines
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  
-  // Using gemini-3-pro-preview for high-quality marketing reasoning
-  const model = "gemini-3-pro-preview";
-  
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+
+  // Using gemini-1.5-flash for speed and reliability
+  const model = "gemini-1.5-flash";
+
   const prompt = `
     Actúa como un estratega de contenido viral de clase mundial para plataformas como TikTok, Instagram Reels y YouTube Shorts.
     Genera 6 ideas de "hooks" (ganchos) distintas, altamente atractivas y diseñadas para detener el scroll, para un video sobre "${topic}".

@@ -35,6 +35,31 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
     const [editData, setEditData] = useState<any>(null);
     const [newPassword, setNewPassword] = useState('');
     const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+    const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+
+    const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+    };
+
+    // --- Componentes Skeleton ---
+    const StatSkeleton = () => (
+        <div className="bg-white p-10 rounded-[3rem] shadow-glass border border-white/50 animate-pulse">
+            <div className="w-14 h-14 bg-gray-100 rounded-2xl mb-8"></div>
+            <div className="h-2 w-20 bg-gray-100 rounded mb-2"></div>
+            <div className="h-10 w-32 bg-gray-100 rounded mb-2"></div>
+            <div className="h-3 w-40 bg-gray-100 rounded"></div>
+        </div>
+    );
+
+    const RowSkeleton = () => (
+        <tr className="animate-pulse">
+            <td className="px-6 py-8"><div className="flex items-center gap-5"><div className="w-14 h-14 bg-gray-100 rounded-3xl"></div><div className="space-y-2"><div className="h-5 w-32 bg-gray-100 rounded"></div><div className="h-3 w-20 bg-gray-100 rounded"></div></div></div></td>
+            <td className="px-6 py-8"><div className="h-6 w-24 bg-gray-100 rounded-full"></div></td>
+            <td className="px-6 py-8"><div className="h-8 w-32 bg-gray-100 rounded-full"></div></td>
+            <td className="px-6 py-8 text-right"><div className="h-12 w-32 bg-gray-100 rounded-2xl ml-auto"></div></td>
+        </tr>
+    );
 
     useEffect(() => {
         const fetchData = async () => {
@@ -116,6 +141,18 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
             }
         };
         fetchData();
+
+        // 5. REALTIME SUBSCRIPTION
+        const reportSubscription = supabase
+            .channel('any')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, () => {
+                fetchData();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(reportSubscription);
+        };
     }, [onNavigate]);
 
     const handleSaveSettings = async () => {
@@ -148,10 +185,10 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
             }
 
             setClientInfo({ ...clientInfo, ...editData });
-            alert("¡Ajustes guardados con éxito!");
+            showToast("¡Ajustes estratégicos actualizados!");
         } catch (err: any) {
             console.error("Error guardando ajustes:", err);
-            alert(`Hubo un error al guardar: ${err.message || 'Error desconocido'}`);
+            showToast(err.message || 'Error al guardar ajustes', 'error');
         } finally {
             setIsSavingSettings(false);
         }
@@ -159,7 +196,7 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
 
     const handleUpdatePassword = async () => {
         if (!newPassword || newPassword.length < 6) {
-            alert("La contraseña debe tener al menos 6 caracteres");
+            showToast("La contraseña debe tener al menos 6 caracteres", 'error');
             return;
         }
 
@@ -172,10 +209,10 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
             if (error) throw error;
 
             setNewPassword('');
-            alert("¡Contraseña actualizada con éxito!");
+            showToast("¡Acceso actualizado correctamente!");
         } catch (err: any) {
             console.error("Error actualizando contraseña:", err);
-            alert("Error: " + (err.message || "No se pudo actualizar la contraseña"));
+            showToast(err.message || "No se pudo actualizar la contraseña", 'error');
         } finally {
             setIsUpdatingPassword(false);
         }
@@ -274,6 +311,16 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                 />
             )}
 
+            {/* Premium Toast Overlay */}
+            {toast && (
+                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-bottom-10 duration-500">
+                    <div className={`px-8 py-4 rounded-[2rem] shadow-2xl flex items-center gap-4 backdrop-blur-xl border border-white/20 ${toast.type === 'success' ? 'bg-zylo-black text-white' : 'bg-red-600 text-white'}`}>
+                        {toast.type === 'success' ? <CheckCircle size={20} className="text-zylo-green" /> : <X size={20} />}
+                        <span className="text-sm font-bold tracking-tight">{toast.message}</span>
+                    </div>
+                </div>
+            )}
+
             {/* Main Content */}
             <main className="flex-1 p-4 md:p-8 lg:p-12 transition-all duration-500 bg-[#FAFAFA]">
                 <div className="max-w-7xl mx-auto">
@@ -366,23 +413,31 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
                             {/* Stats Grid AAA */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                {[
-                                    { label: 'Reportes Listos', val: reports.length, icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50', sub: 'Estrategias generadas' },
-                                    { label: 'Estrés Evitado', val: (reports.length * 2.5).toFixed(0) + 'h', icon: Clock, color: 'text-green-500', bg: 'bg-green-50', sub: 'Ahorro de tiempo real' },
-                                    { label: 'Status Cuenta', val: 'PRO', icon: Award, color: 'text-zylo-yellow', bg: 'bg-zylo-yellow/10', sub: 'Acceso total habilitado' }
-                                ].map((stat, i) => (
-                                    <div key={i} className="group relative bg-white p-10 rounded-[3rem] shadow-glass border border-white/50 transition-all hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
-                                        <div className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
-                                            <stat.icon size={28} />
+                                {loading ? (
+                                    <>
+                                        <StatSkeleton />
+                                        <StatSkeleton />
+                                        <StatSkeleton />
+                                    </>
+                                ) : (
+                                    [
+                                        { label: 'Reportes Listos', val: reports.length, icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50', sub: 'Estrategias generadas' },
+                                        { label: 'Estrés Evitado', val: (reports.length * 2.5).toFixed(0) + 'h', icon: Clock, color: 'text-green-500', bg: 'bg-green-50', sub: 'Ahorro de tiempo real' },
+                                        { label: 'Status Cuenta', val: 'PRO', icon: Award, color: 'text-zylo-yellow', bg: 'bg-zylo-yellow/10', sub: 'Acceso total habilitado' }
+                                    ].map((stat, i) => (
+                                        <div key={i} className="group relative bg-white p-10 rounded-[3rem] shadow-glass border border-white/50 transition-all hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
+                                            <div className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
+                                                <stat.icon size={28} />
+                                            </div>
+                                            <h3 className="text-gray-400 text-xs font-black uppercase tracking-[0.2em] mb-2">{stat.label}</h3>
+                                            <div className="text-4xl font-black text-zylo-black tracking-tight mb-2 uppercase break-words">{stat.val}</div>
+                                            <p className="text-gray-400 text-xs font-medium">{stat.sub}</p>
+                                            <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none">
+                                                <TrendingUp size={60} />
+                                            </div>
                                         </div>
-                                        <h3 className="text-gray-400 text-xs font-black uppercase tracking-[0.2em] mb-2">{stat.label}</h3>
-                                        <div className="text-4xl font-black text-zylo-black tracking-tight mb-2 uppercase break-words">{stat.val}</div>
-                                        <p className="text-gray-400 text-xs font-medium">{stat.sub}</p>
-                                        <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none">
-                                            <TrendingUp size={60} />
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))
+                                )}
                             </div>
 
                             {/* Enhanced History Table */}
@@ -434,14 +489,12 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                                     </div>
                                                 </div>
                                                 {isReady && (
-                                                    <a
-                                                        href={report.final_slide_url || '#'}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="w-full flex items-center justify-center gap-2 py-3 bg-zylo-black text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl"
+                                                    <button
+                                                        onClick={() => onNavigate('report', report.id)}
+                                                        className="w-full flex items-center justify-center gap-2 py-3 bg-zylo-black text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl active:scale-95 transition-all"
                                                     >
                                                         Ver Reporte <ArrowUpRight size={14} />
-                                                    </a>
+                                                    </button>
                                                 )}
                                             </div>
                                         );
@@ -460,7 +513,17 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-50/50">
-                                            {reports.map((report) => {
+                                            {loading ? (
+                                                <>
+                                                    <RowSkeleton />
+                                                    <RowSkeleton />
+                                                    <RowSkeleton />
+                                                </>
+                                            ) : reports.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={4} className="py-20 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">Sin reportes aún. Próximo lanzamiento en {daysUntilNextReport} días.</td>
+                                                </tr>
+                                            ) : reports.map((report) => {
                                                 const dateStr = new Date(report.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
                                                 const isReady = report.status === 'ready' || report.final_slide_url;
                                                 return (
@@ -489,14 +552,12 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                                         </td>
                                                         <td className="px-6 py-8 text-right">
                                                             {isReady ? (
-                                                                <a
-                                                                    href={report.final_slide_url || '#'}
-                                                                    target="_blank"
-                                                                    rel="noreferrer"
+                                                                <button
+                                                                    onClick={() => onNavigate('report', report.id)}
                                                                     className="inline-flex items-center gap-3 px-6 py-3.5 bg-zylo-black text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-zylo-purple hover:scale-105 active:scale-95 shadow-xl transition-all"
                                                                 >
                                                                     Ver Reporte <ArrowUpRight size={14} />
-                                                                </a>
+                                                                </button>
                                                             ) : (
                                                                 <div className="inline-flex items-center gap-2 px-6 py-3.5 bg-gray-50 text-gray-300 text-[10px] font-black uppercase tracking-widest rounded-2xl">
                                                                     Generando <Clock size={14} className="animate-spin" />
