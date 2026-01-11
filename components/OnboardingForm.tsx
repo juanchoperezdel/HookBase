@@ -135,7 +135,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
           const newId = authData.user?.id;
           if (newId) {
             setCreatedUserId(newId);
-            await supabase.from('onboarding_leads').insert([{
+            const { error: insertError } = await supabase.from('onboarding_leads').insert([{
               user_id: newId,
               full_name: formData.name,
               email: cleanEmail,
@@ -143,11 +143,15 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
               status: 'pending',
               last_step: 1
             }]);
+
+            if (insertError) {
+              console.error("🔥 Error insertando lead:", insertError);
+            }
           }
         }
       } else if (currentStep === 2 && createdUserId) {
         // Step 2: Business Info
-        await supabase.from('onboarding_leads').update({
+        const { error: updateError2 } = await supabase.from('onboarding_leads').update({
           company_name: formData.companyName,
           industry: formData.industry === 'Other' ? formData.otherIndustry : formData.industry,
           brand_tone: formData.brandTone,
@@ -159,12 +163,16 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
           brand_aspiration: formData.brandAspiration,
           last_step: 2
         }).eq('user_id', createdUserId);
+
+        if (updateError2) console.error("🔥 Error actualizando Paso 2:", updateError2);
       } else if (currentStep === 3 && createdUserId) {
         // Step 3: Strategy Info
-        await supabase.from('onboarding_leads').update({
+        const { error: updateError3 } = await supabase.from('onboarding_leads').update({
           competitors: formData.competitors,
           last_step: 3
         }).eq('user_id', createdUserId);
+
+        if (updateError3) console.error("🔥 Error actualizando Paso 3:", updateError3);
       }
     } catch (err) {
       console.error("Error saving incremental lead:", err);
@@ -680,7 +688,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                       name="MP-payButton"
                       className="w-full bg-zylo-green text-zylo-black py-5 rounded-full font-black text-xl flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all shadow-xl active:scale-95 group"
                     >
-                      {isSubmitting ? 'Redirigiendo a Mercado Pago...' : 'Activar HookBase'}
+                      {isSubmitting ? 'Guardando Datos...' : 'Activar HookBase'}
                       {isSubmitting ? <Loader2 className="animate-spin" size={24} /> : <Zap size={20} fill="currentColor" className="group-hover:scale-125 transition-transform" />}
                     </button>
 
