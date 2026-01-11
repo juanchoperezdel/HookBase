@@ -368,7 +368,7 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                 {[
                                     { label: 'Reportes Listos', val: reports.length, icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50', sub: 'Estrategias generadas' },
-                                    { label: 'Nicho Estratégico', val: clientInfo?.industry || '...', icon: Target, color: 'text-zylo-purple', bg: 'bg-zylo-purpleLight/50', sub: 'Tu foco actual' },
+                                    { label: 'Estrés Evitado', val: (reports.length * 2.5).toFixed(0) + 'h', icon: Clock, color: 'text-green-500', bg: 'bg-green-50', sub: 'Ahorro de tiempo real' },
                                     { label: 'Status Cuenta', val: 'PRO', icon: Award, color: 'text-zylo-yellow', bg: 'bg-zylo-yellow/10', sub: 'Acceso total habilitado' }
                                 ].map((stat, i) => (
                                     <div key={i} className="group relative bg-white p-10 rounded-[3rem] shadow-glass border border-white/50 transition-all hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
