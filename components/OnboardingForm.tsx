@@ -174,7 +174,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
       // 2. LEAD CAPTURE: Save data to Supabase regardless of payment
       // This allows for remarketing if they drop out at Mercado Pago
       try {
-        await supabase
+        const { error: saveError } = await supabase
           .from('onboarding_leads')
           .insert([{
             user_id: newUserId,
@@ -193,10 +193,13 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
             competitors: formData.competitors,
             status: 'pending'
           }]);
+
+        if (saveError) {
+          console.error("error_supabase_leads:", saveError);
+          // Opcional: alert("Error al guardar datos: " + saveError.message);
+        }
       } catch (saveError) {
-        console.error("Error saving lead data:", saveError);
-        // We continue to redirect even if saving lead fails, 
-        // to not block the user's purchase flow
+        console.error("error_inesperado_leads:", saveError);
       }
 
       // 3. REDIRECT TO MERCADO PAGO
