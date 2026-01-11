@@ -59,8 +59,22 @@ export function ThankYouPage({ onGoToLogin }: ThankYouPageProps) {
                 // We proceed anyway to try to trigger the bot if we have data
             }
 
-            // 2. Trigger Bot
+            // 2. Initialize Client in 'clients' table
+            // This ensures they only appear in the dashboard/reports after paying
             if (leadData) {
+                const { error: clientError } = await supabase
+                    .from('clients')
+                    .upsert([{
+                        id: userId,
+                        name: leadData.full_name || "Nuevo Cliente",
+                        business_description: leadData.company_name || leadData.industry || "General"
+                    }]);
+
+                if (clientError) {
+                    console.error("Error activating client:", clientError);
+                }
+
+                // 3. Trigger Bot
                 const competitorsString = Array.isArray(leadData.competitors)
                     ? leadData.competitors.join(", ")
                     : (leadData.competitors || "Sin competencia específica");
@@ -68,6 +82,7 @@ export function ThankYouPage({ onGoToLogin }: ThankYouPageProps) {
                 const payload = {
                     userId: userId,
                     clientName: leadData.full_name || "Cliente",
+                    // ... rest of payload same as before
                     clientEmail: leadData.email,
                     businessDescription: `Empresa: ${leadData.company_name}. Industria: ${leadData.industry}. USP: ${leadData.usp}. Objetivo: ${leadData.goal}`,
                     username: competitorsString,
