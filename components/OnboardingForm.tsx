@@ -123,7 +123,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
   const isStep1Valid = formData.name.trim() !== '' &&
     formData.email.trim() !== '' &&
     formData.email.includes('@') &&
-    formData.whatsapp.trim() !== '' &&
+    formData.whatsapp.trim().length >= 10 &&
     isPasswordValid;
 
   const isStep2Valid = formData.companyName.trim() !== '' &&
@@ -573,14 +573,22 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                     </div>
                   </div>
 
-                  <div className="flex gap-4 pt-6">
-                    <button onClick={prevStep} className="px-6 py-4 rounded-full border-2 border-gray-100 font-bold text-gray-400 hover:bg-gray-50 active:scale-95">Atrás</button>
-                    <button
-                      onClick={nextStep}
-                      className="flex-1 bg-zylo-black text-white py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-all shadow-xl active:scale-95"
-                    >
-                      Revisar y Pagar <ChevronRight size={20} />
-                    </button>
+                  <div className="flex flex-col gap-4 pt-6">
+                    {formData.competitors.length < 2 && (
+                      <p className="text-[10px] text-red-400 font-bold uppercase tracking-widest text-center">
+                        Agregá al menos 2 competidores para continuar
+                      </p>
+                    )}
+                    <div className="flex gap-4">
+                      <button onClick={prevStep} className="px-6 py-4 rounded-full border-2 border-gray-100 font-bold text-gray-400 hover:bg-gray-50 active:scale-95">Atrás</button>
+                      <button
+                        disabled={formData.competitors.length < 2}
+                        onClick={nextStep}
+                        className="flex-1 bg-zylo-black text-white py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-all shadow-xl active:scale-95 disabled:opacity-30"
+                      >
+                        Revisar y Pagar <ChevronRight size={20} />
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -645,14 +653,14 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                       name="MP-payButton"
                       className="w-full bg-zylo-green text-zylo-black py-5 rounded-full font-black text-xl flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all shadow-xl active:scale-95 group"
                     >
-                      {isSubmitting ? 'Guardando Datos...' : 'Pagar $10.000 y Activar'}
+                      {isSubmitting ? 'Guardando Datos...' : 'Activar HookBase'}
                       {isSubmitting ? <Loader2 className="animate-spin" size={24} /> : <Zap size={20} fill="currentColor" className="group-hover:scale-125 transition-transform" />}
                     </button>
 
                     <div className="flex items-center justify-center gap-6 opacity-40 grayscale">
                       <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-4" alt="Visa" />
                       <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-6" alt="Mastercard" />
-                      <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.21.22/mercadopago/logo__large.png" className="h-4" alt="Mercado Pago" />
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Mercado_Pago_logo.svg" className="h-6" alt="Mercado Pago" />
                     </div>
 
                     <p className="text-[10px] text-gray-400 text-center font-bold uppercase tracking-widest flex items-center justify-center gap-2">
