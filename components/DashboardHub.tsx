@@ -280,7 +280,15 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                     {/* Welcome Header */}
                     <header className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 mb-12">
                         <div className="animate-in fade-in slide-in-from-left-6 duration-700">
-                            <div className="flex items-center gap-2 mb-3">
+                            <div className="flex items-center gap-3 mb-3">
+                                {activeTab !== 'home' && (
+                                    <button
+                                        onClick={() => setActiveTab('home')}
+                                        className="lg:hidden p-2 -ml-2 bg-white rounded-full shadow-sm border border-gray-100 text-zylo-purple animate-in fade-in slide-in-from-right-4"
+                                    >
+                                        <ChevronRight className="rotate-180" size={20} />
+                                    </button>
+                                )}
                                 <div className="px-3 py-1 bg-zylo-purpleLight/40 backdrop-blur-md rounded-full border border-zylo-purple/10">
                                     <span className="text-[10px] font-black text-zylo-purple uppercase tracking-[0.2em]">
                                         {activeTab === 'home' ? 'Resumen Estratégico' : activeTab === 'settings' ? 'Centro de Configuración' : 'Suscripción Pro'}
@@ -340,7 +348,10 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                     <p className="text-xl font-bold text-zylo-black">
                                         {daysUntilNextReport === 1 ? '¡Mañana mismo!' : `Lanza en ${daysUntilNextReport} días`}
                                     </p>
-                                    <div className="flex items-center gap-2 group-hover:gap-3 transition-all cursor-pointer">
+                                    <div
+                                        onClick={() => setActiveTab('settings')}
+                                        className="flex items-center gap-2 group-hover:gap-3 transition-all cursor-pointer"
+                                    >
                                         <span className="text-[10px] font-black text-zylo-purple uppercase tracking-widest">Ver Detalles</span>
                                         <ArrowUpRight size={14} className="text-zylo-purple" />
                                     </div>
@@ -354,29 +365,30 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                     {activeTab === 'home' && (
                         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
                             {/* Stats Grid AAA */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                                 {[
                                     { label: 'Reportes Listos', val: reports.length, icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50', sub: 'Estrategias generadas' },
+                                    { label: 'Estrés Evitado', val: (reports.length * 2.5).toFixed(0) + 'h', icon: Clock, color: 'text-green-500', bg: 'bg-green-50', sub: 'Ahorro de tiempo real' },
                                     { label: 'Nicho Estratégico', val: clientInfo?.industry || '...', icon: Target, color: 'text-zylo-purple', bg: 'bg-zylo-purpleLight/50', sub: 'Tu foco actual' },
                                     { label: 'Status Cuenta', val: 'PRO', icon: Award, color: 'text-zylo-yellow', bg: 'bg-zylo-yellow/10', sub: 'Acceso total habilitado' }
                                 ].map((stat, i) => (
-                                    <div key={i} className="group relative bg-white p-10 rounded-[3rem] shadow-glass border border-white/50 transition-all hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
-                                        <div className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
-                                            <stat.icon size={28} />
+                                    <div key={i} className="group relative bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-glass border border-white/50 transition-all hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
+                                        <div className={`w-12 h-12 md:w-14 md:h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-6 md:mb-8 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
+                                            <stat.icon size={stat.label === 'Estrés Evitado' ? 24 : 28} />
                                         </div>
-                                        <h3 className="text-gray-400 text-xs font-black uppercase tracking-[0.2em] mb-2">{stat.label}</h3>
-                                        <div className="text-4xl font-black text-zylo-black tracking-tight mb-2 uppercase break-words">{stat.val}</div>
-                                        <p className="text-gray-400 text-xs font-medium">{stat.sub}</p>
-                                        <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-10 transition-opacity">
-                                            <TrendingUp size={60} />
+                                        <h3 className="text-gray-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mb-2">{stat.label}</h3>
+                                        <div className="text-3xl md:text-4xl font-black text-zylo-black tracking-tight mb-2 uppercase break-words">{stat.val}</div>
+                                        <p className="text-gray-400 text-[10px] md:text-xs font-medium">{stat.sub}</p>
+                                        <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none">
+                                            <TrendingUp size={stat.label === 'Estrés Evitado' ? 40 : 60} />
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
                             {/* Enhanced History Table */}
-                            <div className="bg-white/70 backdrop-blur-xl rounded-[3.5rem] shadow-glass border border-white overflow-hidden p-4 md:p-10">
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 px-2">
+                            <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] md:rounded-[3.5rem] shadow-glass border border-white overflow-hidden p-4 md:p-10">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 md:mb-12 px-2">
                                     <div className="flex items-center gap-4">
                                         <div className="w-2 h-10 bg-zylo-purple rounded-full"></div>
                                         <div>
@@ -385,21 +397,60 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <div className="relative">
+                                        <div className="relative flex-1 md:flex-initial">
                                             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
                                             <input
                                                 type="text"
                                                 placeholder="Buscar por fecha..."
-                                                className="pl-12 pr-6 py-4 bg-gray-50/50 border border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all w-full md:w-64"
+                                                className="pl-12 pr-6 py-4 bg-gray-50/50 border border-transparent focus:border-zylo-purple/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all w-full md:w-64 shadow-inner"
                                             />
                                         </div>
-                                        <button className="p-4 bg-gray-50/50 rounded-2xl text-gray-400 hover:text-zylo-purple hover:bg-white transition-all">
+                                        <button className="p-4 bg-white rounded-2xl text-gray-400 hover:text-zylo-purple hover:shadow-lg transition-all border border-gray-100">
                                             <Filter size={20} />
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="overflow-x-auto">
+                                {/* Custom Mobile Row View */}
+                                <div className="md:hidden space-y-4 px-2">
+                                    {reports.length === 0 ? (
+                                        <div className="py-20 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">Sin reportes aún.</div>
+                                    ) : reports.map((report) => {
+                                        const isReady = report.status === 'ready' || report.final_slide_url;
+                                        const dateStr = new Date(report.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+                                        return (
+                                            <div key={report.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm active:scale-[0.98] transition-all">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isReady ? 'bg-zylo-purpleLight/50 text-zylo-purple' : 'bg-gray-100 text-gray-300'}`}>
+                                                            <Sparkle size={20} />
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-black text-zylo-black text-sm">Estrategia Viral</div>
+                                                            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{dateStr}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${isReady ? 'bg-zylo-green/10 text-zylo-green' : 'bg-amber-400/10 text-amber-500'}`}>
+                                                        {isReady ? 'LISTO' : 'IA...'}
+                                                    </div>
+                                                </div>
+                                                {isReady && (
+                                                    <a
+                                                        href={report.final_slide_url || '#'}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="w-full flex items-center justify-center gap-2 py-3 bg-zylo-black text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl"
+                                                    >
+                                                        Ver Reporte <ArrowUpRight size={14} />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Desktop Table View */}
+                                <div className="hidden md:block overflow-x-auto">
                                     <table className="w-full text-left">
                                         <thead>
                                             <tr className="border-b border-gray-100">
