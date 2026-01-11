@@ -214,10 +214,10 @@ function App() {
                     Quiero probar HookBase
                   </button>
                 </div>
-                <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-gray-500 font-medium pt-4">
-                  <span className="flex items-center gap-2">✓ 7 días gratis</span>
-                  <span className="flex items-center gap-2">✓ Sin compromiso</span>
-                  <span className="flex items-center gap-2">✓ Cancela cuando quieras</span>
+                <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 pt-4">
+                  <span className="flex items-center gap-2">✓ Reportes personalizados</span>
+                  <span className="flex items-center gap-2">✓ Acceso PRO Inmediato</span>
+                  <span className="flex items-center gap-2">✓ Guiones INCREIBLES</span>
                 </div>
               </div>
             </div>
