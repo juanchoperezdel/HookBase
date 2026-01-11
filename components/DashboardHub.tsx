@@ -62,6 +62,13 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                     company_name: clientData.company_name,
                     industry: clientData.industry,
                     goal: clientData.goal,
+                    whatsapp: clientData.whatsapp,
+                    brand_tone: clientData.brand_tone,
+                    usp: clientData.usp,
+                    video_formats: Array.isArray(clientData.video_formats) ? clientData.video_formats : [],
+                    brand_perception: clientData.brand_perception,
+                    brand_aspiration: clientData.brand_aspiration,
+                    target_pain_point: clientData.target_pain_point,
                     competitors: Array.isArray(clientData.competitors) ? clientData.competitors : []
                 });
 
@@ -116,7 +123,14 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                 company_name: editData.company_name,
                 industry: editData.industry,
                 goal: editData.goal,
-                competitors: editData.competitors // Supabase maneja arreglos si la columna es text[] o jsonb
+                whatsapp: editData.whatsapp,
+                brand_tone: editData.brand_tone,
+                usp: editData.usp,
+                video_formats: editData.video_formats,
+                brand_perception: editData.brand_perception,
+                brand_aspiration: editData.brand_aspiration,
+                target_pain_point: editData.target_pain_point,
+                competitors: editData.competitors
             };
 
             const { error } = await supabase
@@ -436,104 +450,199 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                 )}
 
                 {activeTab === 'settings' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {/* Profile Info */}
-                        <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-100 space-y-6">
-                            <h2 className="text-xl font-extrabold text-zylo-black flex items-center gap-2">
-                                <Zap size={20} className="text-zylo-purple" /> Información del Negocio
-                            </h2>
+                        <div className="xl:col-span-2 space-y-8">
+                            <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-100 flex flex-col gap-8">
+                                <h2 className="text-xl font-extrabold text-zylo-black flex items-center gap-2">
+                                    <Zap size={20} className="text-zylo-purple" /> Información del Negocio
+                                </h2>
 
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Nombre Completo</label>
-                                    <input
-                                        type="text"
-                                        value={editData?.full_name || ''}
-                                        onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
-                                        className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                    />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Nombre Completo</label>
+                                        <input
+                                            type="text"
+                                            value={editData?.full_name || ''}
+                                            onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
+                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">WhatsApp</label>
+                                        <input
+                                            type="text"
+                                            value={editData?.whatsapp || ''}
+                                            onChange={(e) => setEditData({ ...editData, whatsapp: e.target.value })}
+                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Nombre de la Empresa</label>
+                                        <input
+                                            type="text"
+                                            value={editData?.company_name || ''}
+                                            onChange={(e) => setEditData({ ...editData, company_name: e.target.value })}
+                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Industria / Nicho</label>
+                                        <input
+                                            type="text"
+                                            value={editData?.industry || ''}
+                                            onChange={(e) => setEditData({ ...editData, industry: e.target.value })}
+                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Nombre de la Empresa</label>
-                                    <input
-                                        type="text"
-                                        value={editData?.company_name || ''}
-                                        onChange={(e) => setEditData({ ...editData, company_name: e.target.value })}
-                                        className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Industria / Nicho</label>
-                                    <input
-                                        type="text"
-                                        value={editData?.industry || ''}
-                                        onChange={(e) => setEditData({ ...editData, industry: e.target.value })}
-                                        className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Objetivo del Canal</label>
-                                    <textarea
-                                        value={editData?.goal || ''}
-                                        onChange={(e) => setEditData({ ...editData, goal: e.target.value })}
-                                        rows={3}
-                                        className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all resize-none"
-                                    />
+
+                                <div className="space-y-6 pt-4 border-t border-gray-50">
+                                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Estrategia y Tono</h3>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Tono de Marca</label>
+                                            <input
+                                                type="text"
+                                                value={editData?.brand_tone || ''}
+                                                onChange={(e) => setEditData({ ...editData, brand_tone: e.target.value })}
+                                                placeholder="Ej: Informativo, Gracioso, Serio"
+                                                className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">USP (Propuesta única)</label>
+                                            <input
+                                                type="text"
+                                                value={editData?.usp || ''}
+                                                onChange={(e) => setEditData({ ...editData, usp: e.target.value })}
+                                                className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Objetivo del Canal</label>
+                                        <textarea
+                                            value={editData?.goal || ''}
+                                            onChange={(e) => setEditData({ ...editData, goal: e.target.value })}
+                                            rows={2}
+                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Percepción Actual</label>
+                                            <textarea
+                                                value={editData?.brand_perception || ''}
+                                                onChange={(e) => setEditData({ ...editData, brand_perception: e.target.value })}
+                                                rows={2}
+                                                className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all resize-none"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Aspiración de Marca</label>
+                                            <textarea
+                                                value={editData?.brand_aspiration || ''}
+                                                onChange={(e) => setEditData({ ...editData, brand_aspiration: e.target.value })}
+                                                rows={2}
+                                                className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all resize-none"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Punto de dolor del público</label>
+                                        <textarea
+                                            value={editData?.target_pain_point || ''}
+                                            onChange={(e) => setEditData({ ...editData, target_pain_point: e.target.value })}
+                                            rows={2}
+                                            className="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Formatos de Video</label>
+                                        <div className="flex flex-wrap gap-3">
+                                            {['Vlogs', 'Tutoriales', 'Talking Head', 'Trends', 'Educativo', 'Entretenimiento'].map((format) => (
+                                                <button
+                                                    key={format}
+                                                    onClick={() => {
+                                                        const current = editData.video_formats || [];
+                                                        const next = current.includes(format)
+                                                            ? current.filter((f: string) => f !== format)
+                                                            : [...current, format];
+                                                        setEditData({ ...editData, video_formats: next });
+                                                    }}
+                                                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${editData?.video_formats?.includes(format)
+                                                            ? 'bg-zylo-purple border-zylo-purple text-white shadow-lg shadow-zylo-purple/25'
+                                                            : 'bg-white border-gray-100 text-gray-400 hover:border-zylo-purple hover:text-zylo-purple'
+                                                        }`}
+                                                >
+                                                    {format}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Competitors */}
-                        <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-100 flex flex-col">
-                            <h2 className="text-xl font-extrabold text-zylo-black flex items-center gap-2 mb-6">
-                                <BarChart3 size={20} className="text-zylo-purple" /> Competencia
-                            </h2>
-                            <p className="text-sm text-gray-500 mb-6">Agregá los perfiles que querés que HookBase analice para tus reportes.</p>
+                        {/* Competitors & Actions */}
+                        <div className="space-y-8">
+                            <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-100 flex flex-col h-fit">
+                                <h2 className="text-xl font-extrabold text-zylo-black flex items-center gap-2 mb-6">
+                                    <BarChart3 size={20} className="text-zylo-purple" /> Competencia
+                                </h2>
+                                <p className="text-sm text-gray-500 mb-6">Agregá los perfiles que querés que HookBase analice para tus reportes.</p>
 
-                            <div className="flex-1 space-y-6">
-                                <div className="flex flex-wrap gap-2">
-                                    {editData?.competitors.map((comp: string, idx: number) => (
-                                        <div key={idx} className="flex items-center gap-2 bg-zylo-purpleLight/50 text-zylo-purple px-4 py-2 rounded-full text-sm font-bold">
-                                            @{comp}
-                                            <button
-                                                onClick={() => setEditData({ ...editData, competitors: editData.competitors.filter((_: any, i: number) => i !== idx) })}
-                                                className="hover:text-red-500 transition-colors"
-                                            >
-                                                <X size={14} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                    {editData?.competitors.length === 0 && (
-                                        <p className="text-xs text-gray-400 italic">No hay competidores agregados.</p>
-                                    )}
-                                </div>
+                                <div className="space-y-6">
+                                    <div className="flex flex-wrap gap-2">
+                                        {editData?.competitors.map((comp: string, idx: number) => (
+                                            <div key={idx} className="flex items-center gap-2 bg-zylo-purpleLight/50 text-zylo-purple px-4 py-2 rounded-full text-sm font-bold">
+                                                @{comp}
+                                                <button
+                                                    onClick={() => setEditData({ ...editData, competitors: editData.competitors.filter((_: any, i: number) => i !== idx) })}
+                                                    className="hover:text-red-500 transition-colors"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        {editData?.competitors.length === 0 && (
+                                            <p className="text-xs text-gray-400 italic">No hay competidores agregados.</p>
+                                        )}
+                                    </div>
 
-                                <div className="relative pt-4 border-t border-gray-50">
-                                    <input
-                                        type="text"
-                                        placeholder="Ej: nicolasgalli"
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                const val = (e.currentTarget.value).trim().replace('@', '');
-                                                if (val && !editData.competitors.includes(val)) {
-                                                    setEditData({ ...editData, competitors: [...editData.competitors, val] });
-                                                    e.currentTarget.value = '';
+                                    <div className="relative pt-4 border-t border-gray-50">
+                                        <input
+                                            type="text"
+                                            placeholder="Ej: nicolasgalli"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    const val = (e.currentTarget.value).trim().replace('@', '');
+                                                    if (val && !editData.competitors.includes(val)) {
+                                                        setEditData({ ...editData, competitors: [...editData.competitors, val] });
+                                                        e.currentTarget.value = '';
+                                                    }
                                                 }
-                                            }
-                                        }}
-                                        className="w-full pl-5 pr-14 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
-                                    />
-                                    <div className="absolute right-4 top-[2.4rem] text-[10px] font-black text-gray-300 uppercase">Enter para agregar</div>
+                                            }}
+                                            className="w-full pl-5 pr-14 py-4 bg-gray-50 rounded-2xl border border-transparent focus:border-zylo-purple focus:bg-white outline-none font-medium transition-all"
+                                        />
+                                        <div className="absolute right-4 top-[2.4rem] text-[10px] font-black text-gray-300 uppercase">Enter</div>
+                                    </div>
                                 </div>
                             </div>
 
                             <button
                                 onClick={handleSaveSettings}
                                 disabled={isSavingSettings}
-                                className="w-full bg-zylo-black text-white py-4 rounded-full font-bold shadow-xl hover:bg-gray-800 transition-all flex items-center justify-center gap-2 mt-8 disabled:opacity-50"
+                                className="w-full bg-zylo-black text-white py-6 rounded-full font-bold shadow-xl hover:bg-gray-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                             >
-                                {isSavingSettings ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
-                                {isSavingSettings ? 'Guardando...' : 'Guardar Cambios'}
+                                {isSavingSettings ? <Loader2 className="animate-spin" size={24} /> : <Zap size={24} fill="currentColor" />}
+                                <span className="text-lg">{isSavingSettings ? 'Guardando...' : 'Guardar Todos los Cambios'}</span>
                             </button>
                         </div>
                     </div>
