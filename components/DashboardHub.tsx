@@ -110,23 +110,30 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
     const handleSaveSettings = async () => {
         setIsSavingSettings(true);
         try {
+            // Aseguramos que los datos se envíen correctamente según el tipo de columna
+            const dataToUpdate = {
+                full_name: editData.full_name,
+                company_name: editData.company_name,
+                industry: editData.industry,
+                goal: editData.goal,
+                competitors: editData.competitors // Supabase maneja arreglos si la columna es text[] o jsonb
+            };
+
             const { error } = await supabase
                 .from('clients')
-                .update({
-                    full_name: editData.full_name,
-                    company_name: editData.company_name,
-                    industry: editData.industry,
-                    goal: editData.goal,
-                    competitors: editData.competitors
-                })
+                .update(dataToUpdate)
                 .eq('id', clientInfo.id);
 
-            if (error) throw error;
+            if (error) {
+                console.error("Error detallado de Supabase:", error);
+                throw error;
+            }
+
             setClientInfo({ ...clientInfo, ...editData });
             alert("¡Ajustes guardados con éxito!");
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error guardando ajustes:", err);
-            alert("Hubo un error al guardar.");
+            alert(`Hubo un error al guardar: ${err.message || 'Error desconocido'}`);
         } finally {
             setIsSavingSettings(false);
         }
@@ -548,11 +555,13 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-gray-50 p-6 rounded-3xl space-y-1">
                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Precio</p>
-                                    <p className="text-lg font-bold text-zylo-black">$15 USD / mes</p>
+                                    <p className="text-lg font-bold text-zylo-black">$10.000 / mes</p>
                                 </div>
                                 <div className="bg-gray-50 p-6 rounded-3xl space-y-1">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Siguiente Pago</p>
-                                    <p className="text-lg font-bold text-zylo-black">Próximo período</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Próximo Pago</p>
+                                    <p className="text-lg font-bold text-zylo-black">
+                                        {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleDateString('es-ES', { day: '2-digit', month: 'long' })}
+                                    </p>
                                 </div>
                             </div>
 
@@ -563,16 +572,18 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-zylo-purple">¿Necesitás darte de baja?</h4>
-                                        <p className="text-sm text-zylo-purple/70 font-medium mt-1">Podés cancelar en cualquier momento desde tu panel de Mercado Pago. Dejarás de recibir reportes al finalizar el período actual.</p>
+                                        <p className="text-sm text-zylo-purple/70 font-medium mt-1">Podés gestionar o cancelar tu suscripción directamente desde Mercado Pago. El cobro se realiza automáticamente cada día 1 de mes.</p>
                                     </div>
                                 </div>
 
-                                <button
-                                    onClick={() => alert("Para gestionar tu suscripción, ingresá a Mercado Pago > Mis Suscripciones o contactanos a soporte@hookbase.com")}
-                                    className="w-full py-4 rounded-full font-bold text-red-500 border-2 border-red-50 hover:bg-red-50 transition-all text-center"
+                                <a
+                                    href="https://www.mercadopago.com.ar/subscriptions#from-section=menu"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-full block py-4 rounded-full font-bold text-red-500 border-2 border-red-50 hover:bg-red-50 transition-all text-center"
                                 >
-                                    Solicitar Baja
-                                </button>
+                                    Gestionar Suscripción
+                                </a>
                             </div>
                         </div>
                     </div>
