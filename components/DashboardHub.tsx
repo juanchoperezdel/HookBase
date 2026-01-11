@@ -3,7 +3,7 @@ import {
     Plus, Search, Calendar, ChevronRight,
     Layout, BarChart3, Settings, LogOut,
     FileText, Clock, Filter, ArrowUpRight, Loader2, ExternalLink, Menu, X, Zap,
-    Mic2, Target, HeartHandshake, Star, Sparkles, Eye, CheckCircle
+    Mic2, Target, HeartHandshake, Star, Sparkles, Eye, CheckCircle, Lock, Key
 } from 'lucide-react';
 import { supabase } from './supabaseClient'; // Asegúrate de que la ruta sea correcta
 
@@ -32,6 +32,8 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
     // States for Editing (Settings)
     const [isSavingSettings, setIsSavingSettings] = useState(false);
     const [editData, setEditData] = useState<any>(null);
+    const [newPassword, setNewPassword] = useState('');
+    const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -151,6 +153,30 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
             alert(`Hubo un error al guardar: ${err.message || 'Error desconocido'}`);
         } finally {
             setIsSavingSettings(false);
+        }
+    };
+
+    const handleUpdatePassword = async () => {
+        if (!newPassword || newPassword.length < 6) {
+            alert("La contraseña debe tener al menos 6 caracteres");
+            return;
+        }
+
+        setIsUpdatingPassword(true);
+        try {
+            const { error } = await supabase.auth.updateUser({
+                password: newPassword
+            });
+
+            if (error) throw error;
+
+            setNewPassword('');
+            alert("¡Contraseña actualizada con éxito!");
+        } catch (err: any) {
+            console.error("Error actualizando contraseña:", err);
+            alert("Error: " + (err.message || "No se pudo actualizar la contraseña"));
+        } finally {
+            setIsUpdatingPassword(false);
         }
     };
 
@@ -657,8 +683,42 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                 className="w-full bg-zylo-black text-white py-6 rounded-full font-bold shadow-xl hover:bg-gray-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                             >
                                 {isSavingSettings ? <Loader2 className="animate-spin" size={24} /> : <Zap size={24} fill="currentColor" />}
-                                <span className="text-lg">{isSavingSettings ? 'Guardando...' : 'Guardar Todos los Cambios'}</span>
+                                <span className="text-lg">{isSavingSettings ? 'Guardando...' : 'Guardar Datos Estratégicos'}</span>
                             </button>
+
+                            {/* Account Settings */}
+                            <div className="bg-white p-8 rounded-[2.5rem] shadow-card border border-gray-200 flex flex-col h-fit mt-8 border-dashed">
+                                <h2 className="text-xl font-extrabold text-zylo-black flex items-center gap-2 mb-6">
+                                    <Lock size={20} className="text-gray-400" /> Configuración de Cuenta
+                                </h2>
+
+                                <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1">Nueva Contraseña</label>
+                                        <div className="relative">
+                                            <input
+                                                type="password"
+                                                value={newPassword}
+                                                onChange={(e) => setNewPassword(e.target.value)}
+                                                placeholder="••••••••"
+                                                className="w-full pl-5 pr-14 py-4 bg-gray-50 border-2 border-transparent focus:border-zylo-purple/40 focus:bg-white rounded-2xl text-base outline-none transition-all font-medium"
+                                            />
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
+                                                <Key size={18} />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={handleUpdatePassword}
+                                        disabled={isUpdatingPassword || !newPassword}
+                                        className="w-full py-4 rounded-2xl font-bold bg-white border-2 border-gray-100 text-gray-600 hover:border-zylo-purple hover:text-zylo-purple transition-all flex items-center justify-center gap-2 disabled:opacity-30"
+                                    >
+                                        {isUpdatingPassword ? <Loader2 className="animate-spin" size={18} /> : <Lock size={18} />}
+                                        Cambiar Contraseña
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
