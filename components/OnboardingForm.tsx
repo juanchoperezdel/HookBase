@@ -660,7 +660,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                     <div className="flex items-center justify-center gap-6 opacity-40 grayscale">
                       <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-4" alt="Visa" />
                       <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-6" alt="Mastercard" />
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Mercado_Pago_logo.svg" className="h-6" alt="Mercado Pago" />
+                      <img src="/Mercado_Pago.svg.png" className="h-6" alt="Mercado Pago" />
                     </div>
 
                     <p className="text-[10px] text-gray-400 text-center font-bold uppercase tracking-widest flex items-center justify-center gap-2">
