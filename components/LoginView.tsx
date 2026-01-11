@@ -23,27 +23,33 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onRegister, onLogi
 
     try {
       // 1. LOGIN REAL CON SUPABASE
+      const cleanEmail = email.trim();
+      const cleanPass = password.trim();
+
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
+        email: cleanEmail,
+        password: cleanPass,
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error("🔥 Detalle error Auth:", authError);
+        throw authError;
+      }
 
       if (authData.user) {
         console.log("✅ Usuario autenticado:", authData.user.id);
 
         // 2. VERIFICAMOS SI TIENE PERFIL DE CLIENTE (Doble check)
         const { data: clientData, error: clientError } = await supabase
-            .from('clients')
-            .select('*')
-            .eq('id', authData.user.id)
-            .single();
+          .from('clients')
+          .select('*')
+          .eq('id', authData.user.id)
+          .single();
 
         if (clientError) {
-             console.warn("El usuario entró a Auth pero no tiene ficha de cliente (El trigger falló o es antiguo).");
-             // Opcional: Podríamos dejarlo pasar igual o mostrar error. 
-             // Por ahora lo dejamos pasar para que vea "Sin Datos" en el dashboard y no se trabe.
+          console.warn("El usuario entró a Auth pero no tiene ficha de cliente (El trigger falló o es antiguo).");
+          // Opcional: Podríamos dejarlo pasar igual o mostrar error. 
+          // Por ahora lo dejamos pasar para que vea "Sin Datos" en el dashboard y no se trabe.
         }
 
         // 3. ÉXITO
@@ -53,7 +59,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onRegister, onLogi
 
     } catch (error: any) {
       console.error("❌ Error de login:", error.message);
-      
+
       // Mensajes de error amigables
       if (error.message.includes("Invalid login")) {
         setErrorMsg("Email o contraseña incorrectos.");
@@ -69,18 +75,18 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onRegister, onLogi
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-sans">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-white rounded-[2.5rem] shadow-card border border-gray-100 p-8 md:p-12"
       >
         <button onClick={onBack} className="mb-8 p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors">
-            <ArrowLeft size={20} />
+          <ArrowLeft size={20} />
         </button>
 
         <div className="text-center mb-10">
           <div className="w-16 h-16 bg-zylo-black text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-             <Zap size={32} fill="currentColor" />
+            <Zap size={32} fill="currentColor" />
           </div>
           <h1 className="text-3xl font-extrabold text-zylo-black tracking-tight">Bienvenido</h1>
           <p className="text-gray-500 font-medium text-sm mt-2">Ingresa tus datos para acceder al dashboard.</p>
@@ -88,14 +94,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onRegister, onLogi
 
         {/* Mensaje de Error */}
         {errorMsg && (
-            <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 flex items-center gap-3 text-red-600 text-sm font-bold"
-            >
-                <AlertCircle size={18} />
-                {errorMsg}
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 flex items-center gap-3 text-red-600 text-sm font-bold"
+          >
+            <AlertCircle size={18} />
+            {errorMsg}
+          </motion.div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-6">
@@ -103,7 +109,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onRegister, onLogi
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email</label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input 
+              <input
                 type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-gray-50 border-2 border-transparent rounded-2xl pl-12 pr-5 py-4 text-base focus:border-zylo-purple/40 focus:bg-white outline-none transition-all font-medium"
                 placeholder="tu@email.com"
@@ -115,13 +121,13 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onRegister, onLogi
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Contraseña</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input 
+              <input
                 type={showPassword ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-gray-50 border-2 border-transparent rounded-2xl pl-12 pr-12 py-4 text-base focus:border-zylo-purple/40 focus:bg-white outline-none transition-all font-medium"
                 placeholder="••••••••"
               />
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zylo-purple transition-colors"
               >
@@ -130,7 +136,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onRegister, onLogi
             </div>
           </div>
 
-          <button 
+          <button
             type="submit"
             disabled={isLoading}
             className="w-full bg-zylo-black text-white py-5 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-all shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -141,9 +147,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onBack, onRegister, onLogi
         </form>
 
         <div className="mt-8 text-center">
-            <p className="text-gray-400 text-sm font-medium">
-                ¿Aún no tienes cuenta? <button onClick={onRegister} className="text-zylo-purple font-black hover:underline ml-1">Crea una ahora</button>
-            </p>
+          <p className="text-gray-400 text-sm font-medium">
+            ¿Aún no tienes cuenta? <button onClick={onRegister} className="text-zylo-purple font-black hover:underline ml-1">Crea una ahora</button>
+          </p>
         </div>
       </motion.div>
     </div>
