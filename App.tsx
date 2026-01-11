@@ -14,7 +14,6 @@ import { OnboardingForm } from './components/OnboardingForm';
 import { LoginView } from './components/LoginView';
 import { ROICalculator } from './components/ROICalculator';
 import { DashboardHub } from './components/DashboardHub';
-import { HookGenerator } from './components/HookGenerator';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsOfService } from './components/TermsOfService';
 import { ThankYouPage } from './components/ThankYouPage';
@@ -178,19 +177,6 @@ function App() {
           onGetStarted={() => navigateTo('onboarding')}
         />
 
-        <section id="generator" className="py-20 bg-white">
-          <div className="container mx-auto px-6 md:px-12">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-5xl font-extrabold text-zylo-black mb-4">
-                Probá nuestro <span className="text-zylo-purple">generador gratuito</span>
-              </h2>
-              <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-                Escribí el tema de tu próximo video y obtené 6 hooks virales al instante.
-              </p>
-            </div>
-            <HookGenerator />
-          </div>
-        </section>
 
         <DataProof onGetStarted={() => navigateTo('onboarding')} />
         <PainPoints />
