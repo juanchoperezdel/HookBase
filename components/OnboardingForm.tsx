@@ -680,7 +680,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                       name="MP-payButton"
                       className="w-full bg-zylo-green text-zylo-black py-5 rounded-full font-black text-xl flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all shadow-xl active:scale-95 group"
                     >
-                      {isSubmitting ? 'Guardando Datos...' : 'Activar HookBase'}
+                      {isSubmitting ? 'Redirigiendo a Mercado Pago...' : 'Activar HookBase'}
                       {isSubmitting ? <Loader2 className="animate-spin" size={24} /> : <Zap size={20} fill="currentColor" className="group-hover:scale-125 transition-transform" />}
                     </button>
 
