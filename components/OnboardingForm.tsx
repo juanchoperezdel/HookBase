@@ -541,11 +541,12 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                   <div className="flex gap-4 pt-6">
                     <button onClick={prevStep} className="px-6 py-4 rounded-full border-2 border-gray-100 font-bold text-gray-400 hover:bg-gray-50 active:scale-95">Atrás</button>
                     <button
-                      disabled={!isStep2Valid}
-                      onClick={nextStep}
+                      disabled={!isStep2Valid || isSaving}
+                      onClick={handleNextStep}
                       className="flex-1 bg-zylo-black text-white py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-all shadow-xl disabled:opacity-30 active:scale-95"
                     >
-                      Continuar <ChevronRight size={20} />
+                      {isSaving ? <Loader2 className="animate-spin" size={20} /> : 'Continuar'}
+                      {!isSaving && <ChevronRight size={20} />}
                     </button>
                   </div>
                 </motion.div>
