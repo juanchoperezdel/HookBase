@@ -66,12 +66,24 @@ export function ThankYouPage({ onGoToLogin }: ThankYouPageProps) {
                     .from('clients')
                     .upsert([{
                         id: userId,
-                        name: leadData.full_name || "Nuevo Cliente",
+                        full_name: leadData.full_name || "Nuevo Cliente",
+                        email: leadData.email,
+                        whatsapp: leadData.whatsapp,
+                        company_name: leadData.company_name,
+                        industry: leadData.industry,
+                        brand_tone: leadData.brand_tone,
+                        goal: leadData.goal,
+                        video_formats: leadData.video_formats,
+                        usp: leadData.usp,
+                        brand_perception: leadData.brand_perception,
+                        brand_aspiration: leadData.brand_aspiration,
+                        target_pain_point: leadData.target_pain_point,
+                        competitors: leadData.competitors,
                         business_description: leadData.company_name || leadData.industry || "General"
                     }]);
 
                 if (clientError) {
-                    console.error("Error activating client:", clientError);
+                    console.error("Error activating client profile:", clientError);
                 }
 
                 // 3. Trigger Bot
