@@ -423,14 +423,26 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                     [
                                         { label: 'Reportes Listos', val: reports.length, icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50', sub: 'Estrategias generadas' },
                                         { label: 'Estrés Evitado', val: (reports.length * 2.5).toFixed(0) + 'h', icon: Clock, color: 'text-green-500', bg: 'bg-green-50', sub: 'Ahorro de tiempo real' },
-                                        { label: 'Status Cuenta', val: 'PRO', icon: Award, color: 'text-zylo-yellow', bg: 'bg-zylo-yellow/10', sub: 'Acceso total habilitado' }
+                                        {
+                                            label: 'Status Cuenta',
+                                            val: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'PRO' : 'Activá tu plan',
+                                            icon: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? Award : Zap,
+                                            color: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'text-zylo-yellow' : 'text-white',
+                                            bg: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'bg-zylo-yellow/10' : 'bg-zylo-green',
+                                            sub: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'Acceso total habilitado' : 'Hacé clic para activar',
+                                            action: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? null : () => window.location.href = `https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7&external_reference=${clientInfo?.id}`
+                                        }
                                     ].map((stat, i) => (
-                                        <div key={i} className="group relative bg-white p-10 rounded-[3rem] shadow-glass border border-white/50 transition-all hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
-                                            <div className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
-                                                <stat.icon size={28} />
+                                        <div
+                                            key={i}
+                                            onClick={stat.action ? stat.action : undefined}
+                                            className={`group relative bg-white p-10 rounded-[3rem] shadow-glass border border-white/50 transition-all hover:-translate-y-2 hover:shadow-2xl overflow-hidden ${stat.action ? 'cursor-pointer ring-2 ring-transparent hover:ring-zylo-green' : ''}`}
+                                        >
+                                            <div className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 group-hover:rotate-3 shadow-sm`}>
+                                                <stat.icon size={28} fill={stat.action ? "currentColor" : "none"} />
                                             </div>
                                             <h3 className="text-gray-400 text-xs font-black uppercase tracking-[0.2em] mb-2">{stat.label}</h3>
-                                            <div className="text-4xl font-black text-zylo-black tracking-tight mb-2 uppercase break-words">{stat.val}</div>
+                                            <div className={`text-4xl font-black tracking-tight mb-2 uppercase break-words ${stat.action ? 'text-zylo-green' : 'text-zylo-black'}`}>{stat.val}</div>
                                             <p className="text-gray-400 text-xs font-medium">{stat.sub}</p>
                                             <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none">
                                                 <TrendingUp size={60} />
