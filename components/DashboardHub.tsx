@@ -289,7 +289,14 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                 setActiveTab('billing');
                                 setIsMobileMenuOpen(false);
                             } else {
-                                window.location.href = `https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7&external_reference=${userId}`;
+                                if (userId) {
+                                    const mpUrl = new URL("https://www.mercadopago.com.ar/subscriptions/checkout");
+                                    mpUrl.searchParams.append("preapproval_plan_id", "a8f14321bb6b4599a67dd8fc47ddb0a7");
+                                    mpUrl.searchParams.append("external_reference", userId);
+                                    window.location.href = mpUrl.toString();
+                                } else {
+                                    console.error("User ID not found for payment redirection");
+                                }
                             }
                         }}
                         className={`w-full bg-gray-900 rounded-2xl p-4 text-white mb-4 text-left transition-all hover:bg-gray-800 ${activeTab === 'billing' ? 'ring-2 ring-zylo-purple ring-offset-2 ring-offset-white' : ''}`}
@@ -441,7 +448,18 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                             color: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'text-zylo-yellow' : 'text-white',
                                             bg: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'bg-zylo-yellow/10' : 'bg-zylo-green',
                                             sub: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'Acceso total habilitado' : 'Hacé clic para activar',
-                                            action: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? null : () => window.location.href = `https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7&external_reference=${userId}`
+                                            action: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active')
+                                                ? null
+                                                : () => {
+                                                    if (userId) {
+                                                        const mpUrl = new URL("https://www.mercadopago.com.ar/subscriptions/checkout");
+                                                        mpUrl.searchParams.append("preapproval_plan_id", "a8f14321bb6b4599a67dd8fc47ddb0a7");
+                                                        mpUrl.searchParams.append("external_reference", userId);
+                                                        window.location.href = mpUrl.toString();
+                                                    } else {
+                                                        console.error("User ID not found for payment redirection");
+                                                    }
+                                                }
                                         }
                                     ].map((stat, i) => (
                                         <div
