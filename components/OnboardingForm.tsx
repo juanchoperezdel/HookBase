@@ -174,11 +174,12 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
 
         if (updateError3) console.error("🔥 Error actualizando Paso 3:", updateError3);
       }
+
+      nextStep();
     } catch (err) {
       console.error("Error saving incremental lead:", err);
     } finally {
       setIsSaving(false);
-      nextStep();
     }
   };
 
