@@ -601,6 +601,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                   <div className="text-center mb-8">
                     <h1 className="text-3xl font-extrabold text-zylo-black mb-4 tracking-tight">Competencia</h1>
                     <p className="text-gray-500 font-medium leading-relaxed text-sm">Agregá cuentas de Instagram que te gusten o a las que quieras superar.</p>
+                    <p className="text-gray-400 text-xs mt-2 font-bold uppercase tracking-wider">Podrás modificarlas más adelante · Máximo 5 cuentas</p>
                   </div>
 
                   <div className="space-y-6">
