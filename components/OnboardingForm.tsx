@@ -45,6 +45,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
     name: '',
     email: '',
     password: '',
+    confirmPassword: '',
     countryCode: '+54',
     whatsapp: '',
     companyName: '',
@@ -210,7 +211,8 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
     formData.email.trim() !== '' &&
     formData.email.includes('@') &&
     formData.whatsapp.trim().length >= 10 &&
-    isPasswordValid;
+    isPasswordValid &&
+    formData.password === formData.confirmPassword;
 
   const isStep2Valid = formData.companyName.trim() !== '' &&
     formData.industry !== '' &&
@@ -345,6 +347,19 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                         </button>
                       </div>
 
+                      <div className="space-y-1.5 mt-3">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] ml-1">Confirmar Contraseña</label>
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          name="confirmPassword" value={(formData as any).confirmPassword} onChange={handleInputChange}
+                          placeholder="Repite tu contraseña"
+                          className={`w-full bg-white border-2 border-gray-100 rounded-2xl px-5 py-4 text-base focus:border-zylo-purple/40 outline-none transition-all font-medium ${formData.password && (formData as any).confirmPassword && formData.password !== (formData as any).confirmPassword ? 'border-red-300 focus:border-red-400' : ''}`}
+                        />
+                        {formData.password && (formData as any).confirmPassword && formData.password !== (formData as any).confirmPassword && (
+                          <p className="text-[10px] text-red-400 font-bold uppercase tracking-wide ml-1">Las contraseñas no coinciden</p>
+                        )}
+                      </div>
+
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3 px-1">
                         <div className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider ${passValidation.length ? 'text-zylo-green' : 'text-gray-400'}`}>
                           <CheckCircle size={12} className={passValidation.length ? 'text-zylo-green' : 'text-gray-200'} /> 8+ Caracteres
@@ -429,7 +444,13 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                       >
                         <option value="">Seleccionar...</option>
                         <option value="Real Estate">Inmobiliaria</option>
-                        <option value="Fitness">Fitness & Salud</option>
+                        <option value="Fitness">Fitness</option>
+                        <option value="Health">Salud & Bienestar</option>
+                        <option value="Gastronomy">Gastronomía</option>
+                        <option value="Technology">Tecnología</option>
+                        <option value="Education">Educación</option>
+                        <option value="Fashion">Moda & Belleza</option>
+                        <option value="Marketing">Marketing</option>
                         <option value="Ecommerce">E-commerce</option>
                         <option value="Professional Services">Servicios Profesionales</option>
                         <option value="Other">Otro</option>
