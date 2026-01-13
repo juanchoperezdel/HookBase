@@ -27,6 +27,7 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
     const [reports, setReports] = useState<ReportView[]>([]);
     const [loading, setLoading] = useState(true);
     const [clientInfo, setClientInfo] = useState<any>(null);
+    const [userId, setUserId] = useState<string | null>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [daysUntilNextReport, setDaysUntilNextReport] = useState<number | null>(null);
 
@@ -71,6 +72,7 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                     onNavigate('landing');
                     return;
                 }
+                setUserId(user.id);
 
                 // 2. BUSCAR DATOS COMPLETOS DEL CLIENTE
                 const { data: clientData, error: clientError } = await supabase
@@ -282,17 +284,26 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
 
                 <div className="p-4 border-t border-gray-100">
                     <button
-                        onClick={() => { setActiveTab('billing'); setIsMobileMenuOpen(false); }}
+                        onClick={() => {
+                            if ((clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active')) {
+                                setActiveTab('billing');
+                                setIsMobileMenuOpen(false);
+                            } else {
+                                window.location.href = `https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7&external_reference=${userId}`;
+                            }
+                        }}
                         className={`w-full bg-gray-900 rounded-2xl p-4 text-white mb-4 text-left transition-all hover:bg-gray-800 ${activeTab === 'billing' ? 'ring-2 ring-zylo-purple ring-offset-2 ring-offset-white' : ''}`}
                     >
                         <div className="flex justify-between items-center mb-2">
-                            <span className="font-bold text-xs">Pro Plan</span>
-                            <span className="text-[10px] bg-zylo-purple/20 text-zylo-purple px-1.5 py-0.5 rounded font-bold uppercase">Activo</span>
+                            <span className="font-bold text-xs">{(clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'Pro Plan' : 'Activá tu Plan'}</span>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${(clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'bg-zylo-purple/20 text-zylo-purple' : 'bg-yellow-400/20 text-yellow-400'}`}>
+                                {(clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'Activo' : 'Pendiente'}
+                            </span>
                         </div>
                         <div className="w-full bg-gray-700 h-1 rounded-full overflow-hidden mb-2">
-                            <div className="bg-zylo-green h-full w-[100%]"></div>
+                            <div className={`h-full w-[100%] ${(clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'bg-zylo-green' : 'bg-yellow-400'}`}></div>
                         </div>
-                        <p className="text-[10px] text-gray-400">Reportes Automáticos</p>
+                        <p className="text-[10px] text-gray-400">{(clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'Reportes Automáticos' : 'Solo un paso más...'}</p>
                     </button>
                     <button
                         onClick={handleLogout}
@@ -430,7 +441,7 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                             color: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'text-zylo-yellow' : 'text-white',
                                             bg: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'bg-zylo-yellow/10' : 'bg-zylo-green',
                                             sub: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'Acceso total habilitado' : 'Hacé clic para activar',
-                                            action: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? null : () => window.location.href = `https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7&external_reference=${clientInfo?.id}`
+                                            action: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? null : () => window.location.href = `https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7&external_reference=${userId}`
                                         }
                                     ].map((stat, i) => (
                                         <div
