@@ -449,8 +449,6 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                             sub: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active') ? 'Acceso total habilitado' : 'Hacé clic para activar',
                                             action: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active')
                                                 ? null
-                                            action: (clientInfo?.subscription_status === 'active' || clientInfo?.status === 'active')
-                                                ? null
                                                 : () => {
                                                     if (userId) {
                                                         const MP_SUBSCRIPTION_URL = "https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7";
