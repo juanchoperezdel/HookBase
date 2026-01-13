@@ -453,7 +453,8 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                                 ? null
                                                 : () => {
                                                     if (userId) {
-                                                        const fullUrl = `${MP_SUBSCRIPTION_URL}&external_reference=${userId}`;
+                                                        const timestamp = Date.now();
+                                                        const fullUrl = `${MP_SUBSCRIPTION_URL}&external_reference=${userId}_${timestamp}`;
                                                         console.log("Redirecting to MP:", fullUrl);
                                                         window.location.href = fullUrl;
                                                     } else {
