@@ -64,6 +64,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
   const [competitorInput, setCompetitorInput] = useState('');
   const [createdUserId, setCreatedUserId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -102,6 +103,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
 
   const handleNextStep = async () => {
     setIsSaving(true);
+    setShowValidationErrors(false);
     const cleanEmail = formData.email.trim();
 
     try {
@@ -152,6 +154,12 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
         }
       } else if (currentStep === 2 && createdUserId) {
         // Step 2: Business Info
+        if (!isStep2Valid) {
+          setShowValidationErrors(true);
+          setIsSaving(false);
+          return;
+        }
+
         const { error: updateError2 } = await supabase.from('onboarding_leads').update({
           company_name: formData.companyName,
           industry: formData.industry === 'Other' ? formData.otherIndustry : formData.industry,
@@ -433,14 +441,14 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                       <input
                         type="text" name="companyName" value={formData.companyName} onChange={handleInputChange}
                         placeholder="Ej. Studio Digital"
-                        className="w-full bg-white border-2 border-gray-100 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none transition-all font-bold"
+                        className={`w-full bg-white border-2 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none transition-all font-bold ${showValidationErrors && !formData.companyName ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}
                       />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] ml-1">Rubro Principal</label>
                       <select
                         name="industry" value={formData.industry} onChange={handleInputChange}
-                        className="w-full bg-white border-2 border-gray-100 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none appearance-none font-bold"
+                        className={`w-full bg-white border-2 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none appearance-none font-bold ${showValidationErrors && !formData.industry ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}
                       >
                         <option value="">Seleccionar...</option>
                         <option value="Real Estate">Inmobiliaria</option>
@@ -477,7 +485,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                       </label>
                       <select
                         name="brandTone" value={formData.brandTone} onChange={handleInputChange}
-                        className="w-full bg-white border-2 border-gray-100 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none appearance-none font-bold"
+                        className={`w-full bg-white border-2 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none appearance-none font-bold ${showValidationErrors && !formData.brandTone ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}
                       >
                         <option value="">Seleccionar...</option>
                         <option value="Friendly">Amigable y Cercano</option>
@@ -492,7 +500,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                       </label>
                       <select
                         name="goal" value={formData.goal} onChange={handleInputChange}
-                        className="w-full bg-white border-2 border-gray-100 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none appearance-none font-bold"
+                        className={`w-full bg-white border-2 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none appearance-none font-bold ${showValidationErrors && !formData.goal ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}
                       >
                         <option value="">Seleccionar...</option>
                         <option value="Ventas">Generar Ventas</option>
@@ -511,7 +519,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                         name="brandPerception" value={formData.brandPerception} onChange={handleInputChange}
                         rows={3}
                         placeholder="Ej: Siento que me ven demasiado técnico..."
-                        className="w-full bg-white border-2 border-gray-100 rounded-2xl px-5 py-4 text-base focus:border-zylo-purple/40 outline-none resize-none font-medium leading-relaxed"
+                        className={`w-full bg-white border-2 rounded-2xl px-5 py-4 text-base focus:border-zylo-purple/40 outline-none resize-none font-medium leading-relaxed ${showValidationErrors && !formData.brandPerception ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}
                       />
                     </div>
 
@@ -523,7 +531,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                         name="brandAspiration" value={formData.brandAspiration} onChange={handleInputChange}
                         rows={3}
                         placeholder="Ej: Quiero que sientan que soy la autoridad número 1..."
-                        className="w-full bg-white border-2 border-gray-100 rounded-2xl px-5 py-4 text-base focus:border-zylo-purple/40 outline-none resize-none font-medium leading-relaxed"
+                        className={`w-full bg-white border-2 rounded-2xl px-5 py-4 text-base focus:border-zylo-purple/40 outline-none resize-none font-medium leading-relaxed ${showValidationErrors && !formData.brandAspiration ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}
                       />
                     </div>
                   </div>
@@ -535,7 +543,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                     <input
                       type="text" name="targetPainPoint" value={formData.targetPainPoint} onChange={handleInputChange}
                       placeholder="Ej. Les cuesta ahorrar..."
-                      className="w-full bg-white border-2 border-gray-100 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none font-medium"
+                      className={`w-full bg-white border-2 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none font-medium ${showValidationErrors && !formData.targetPainPoint ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}
                     />
                   </div>
 
@@ -546,7 +554,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                     <input
                       type="text" name="usp" value={formData.usp} onChange={handleInputChange}
                       placeholder="Ej. Resultados rápidos..."
-                      className="w-full bg-white border-2 border-gray-100 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none font-medium"
+                      className={`w-full bg-white border-2 rounded-xl px-4 py-4 text-base focus:border-zylo-purple/40 outline-none font-medium ${showValidationErrors && !formData.usp ? 'border-red-300 ring-4 ring-red-50' : 'border-gray-100'}`}
                     />
                   </div>
 
@@ -571,7 +579,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                   <div className="flex gap-4 pt-6">
                     <button onClick={prevStep} className="px-6 py-4 rounded-full border-2 border-gray-100 font-bold text-gray-400 hover:bg-gray-50 active:scale-95">Atrás</button>
                     <button
-                      disabled={!isStep2Valid || isSaving}
+                      disabled={isSaving}
                       onClick={handleNextStep}
                       className="flex-1 bg-zylo-black text-white py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-all shadow-xl disabled:opacity-30 active:scale-95"
                     >
