@@ -38,6 +38,8 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
     const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
     const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
 
+    const MP_SUBSCRIPTION_URL = "https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7";
+
     const showToast = (message: string, type: 'success' | 'error' = 'success') => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3000);
@@ -451,8 +453,9 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                                 ? null
                                                 : () => {
                                                     if (userId) {
-                                                        const MP_SUBSCRIPTION_URL = "https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7";
-                                                        window.location.href = `${MP_SUBSCRIPTION_URL}&external_reference=${userId}`;
+                                                        const fullUrl = `${MP_SUBSCRIPTION_URL}&external_reference=${userId}`;
+                                                        console.log("Redirecting to MP:", fullUrl);
+                                                        window.location.href = fullUrl;
                                                     } else {
                                                         console.error("User ID not found for payment redirection");
                                                     }
