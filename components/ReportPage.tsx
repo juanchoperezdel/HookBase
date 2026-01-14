@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from 'react';
 import {
     ArrowLeft, ExternalLink, CheckCircle2, Video, Music, Clock,
@@ -9,22 +8,22 @@ import { motion, AnimatePresence } from 'motion/react';
 
 // --- ANIMATION VARIANTS ---
 const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.1 }
+    }
 };
 
 const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } }
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } }
 };
 
 const fadeIn = {
-  initial: { opacity: 0, scale: 0.95 },
-  animate: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
 };
 
 // --- 1. FUNCIÓN DE LIMPIEZA (EL "CORTADOR") ---
@@ -67,11 +66,11 @@ const adaptToUI = (posts: any[], analyses: any[], reportData: any) => {
 
         // Armamos la guía técnica combinando los arrays del JSON
         let guideText = "";
-        if (scriptJson.tono_sugerido) guideText += `🎙️ Tono: ${ scriptJson.tono_sugerido } \n\n`;
-        if (scriptJson.formato_de_ejecucion) guideText += `📽️ Formato: ${ scriptJson.formato_de_ejecucion } \n\n`;
+        if (scriptJson.tono_sugerido) guideText += `🎙️ Tono: ${scriptJson.tono_sugerido} \n\n`;
+        if (scriptJson.formato_de_ejecucion) guideText += `📽️ Formato: ${scriptJson.formato_de_ejecucion} \n\n`;
 
         if (Array.isArray(scriptJson.visuales_sugeridas)) {
-            guideText += `📷 Visuales Extra: \n• ${ scriptJson.visuales_sugeridas.join('\n• ') } `;
+            guideText += `📷 Visuales Extra: \n• ${scriptJson.visuales_sugeridas.join('\n• ')} `;
         }
 
         // Procesamos otras versiones
@@ -85,32 +84,32 @@ const adaptToUI = (posts: any[], analyses: any[], reportData: any) => {
 
         return {
             id: post.id || idx,
-            account: post.username ? `@${ post.username } ` : "Usuario",
+            account: post.username ? `@${post.username} ` : "Usuario",
             score: Number(post.final_score || 0).toFixed(1),
             url: post.post_url,
             doc_link: reportData?.final_slide_url || null,
             avatar: `https://ui-avatars.com/api/?name=${post.username || 'U'}&background=random&color=fff`,
 
-// ESTADO: Si hay hook, consideramos que está listo ("Loaded")
-isLoaded: !!scriptJson.hook,
+            // ESTADO: Si hay hook, consideramos que está listo ("Loaded")
+            isLoaded: !!scriptJson.hook,
 
-    script: {
-    hook: hookData,
-        body: bodyData,
-            cta: ctaData,
+            script: {
+                hook: hookData,
+                body: bodyData,
+                cta: ctaData,
                 guide: guideText,
-                    otherVersions, // <--- NUEVO CAMPO
+                otherVersions, // <--- NUEVO CAMPO
 
-                    // Technical Details
-                    tone: scriptJson.tono_sugerido,
-                        duration: scriptJson.duracion_estimada_segundos,
-                            visualStyle: scriptJson.sugerencia_de_visuales_tipo,
-                                typography: Array.isArray(scriptJson.tipografias_sugeridas) ? scriptJson.tipografias_sugeridas[0] : null,
+                // Technical Details
+                tone: scriptJson.tono_sugerido,
+                duration: scriptJson.duracion_estimada_segundos,
+                visualStyle: scriptJson.sugerencia_de_visuales_tipo,
+                typography: Array.isArray(scriptJson.tipografias_sugeridas) ? scriptJson.tipografias_sugeridas[0] : null,
 
-                                    // Strategic Insight (Top Level Columns)
-                                    keys: analysis.claves_para_adaptar,
-                                        recommendation: analysis.recomendacion_final
-}
+                // Strategic Insight (Top Level Columns)
+                keys: analysis.claves_para_adaptar,
+                recommendation: analysis.recomendacion_final
+            }
         };
 
 
@@ -484,4 +483,3 @@ export const ReportPage = ({ onBack, reportId }: any) => {
         </div>
     );
 };
-```
