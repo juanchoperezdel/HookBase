@@ -82,14 +82,8 @@ const adaptToUI = (posts: any[], analyses: any[], reportData: any) => {
             }
         };
 
-        script: {
-            hook: hookData,
-                body: bodyData,
-                    cta: ctaData,
-                        guide: guideText
-        }
-    };
-});
+
+    });
 };
 
 // --- 3. COMPONENTE DE TARJETA DE GUION ---
