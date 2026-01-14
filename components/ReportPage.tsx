@@ -54,8 +54,8 @@ const adaptToUI = (posts: any[], analyses: any[], reportData: any) => {
         }
 
         // Procesamos otras versiones
-        // El JSON viene como objeto: { "autoridad": {...}, "comunidad": {...} }
-        const otherVersionsRaw = scriptJson.otras_versiones_posibles || {};
+        // Ahora leemos directamente de la columna 'otras_versiones_posibles' de la tabla analyses
+        const otherVersionsRaw = analysis.otras_versiones_posibles || scriptJson.otras_versiones_posibles || {};
         const otherVersions = Object.entries(otherVersionsRaw).map(([key, value]: any) => ({
             category: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize
             hook: parseScriptPart(value.hook).audio, // Extrelemos solo el audio del hook
