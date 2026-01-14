@@ -30,7 +30,10 @@ const VIDEO_FORMATS = [
   'Narrado con stock/B-roll',
   'Tutorial de pantalla',
   'Voz en off con texto',
-  'POV / Lifestyle'
+  'POV / Lifestyle',
+  'Entrevista / Podcast',
+  'Cinemático / Storytelling',
+  'Unboxing / Review'
 ];
 
 const MP_SUBSCRIPTION_URL = "https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=a8f14321bb6b4599a67dd8fc47ddb0a7";
@@ -492,6 +495,9 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
                         <option value="Professional">Profesional y Autoritario</option>
                         <option value="Disruptive">Provocador y Directo</option>
                         <option value="Scientific">Educativo y Basado en Datos</option>
+                        <option value="Empathetic">Empático y Compasivo</option>
+                        <option value="Inspirational">Inspirador y Motivador</option>
+                        <option value="Humorous">Humorístico e Irónico</option>
                       </select>
                     </div>
                     <div className="space-y-1.5">
