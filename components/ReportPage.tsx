@@ -78,7 +78,17 @@ const adaptToUI = (posts: any[], analyses: any[], reportData: any) => {
                 body: bodyData,
                 cta: ctaData,
                 guide: guideText,
-                otherVersions // <--- NUEVO CAMPO
+                otherVersions, // <--- NUEVO CAMPO
+
+                // Technical Details
+                tone: scriptJson.tono_sugerido,
+                duration: scriptJson.duracion_estimada_segundos,
+                visualStyle: scriptJson.sugerencia_de_visuales_tipo,
+                typography: Array.isArray(scriptJson.tipografias_sugeridas) ? scriptJson.tipografias_sugeridas[0] : null,
+
+                // Strategic Insight (Top Level Columns)
+                keys: analysis.claves_para_adaptar,
+                recommendation: analysis.recomendacion_final
             }
         };
 
@@ -268,11 +278,82 @@ export const ReportPage = ({ onBack, reportId }: any) => {
 
                         {activeVideo.isLoaded ? (
                             <div className="space-y-12">
+                                {/* 1. GUION PRINCIPAL */}
                                 <ScriptItem index={0} type="HOOK" audio={activeVideo.script?.hook?.audio} visual={activeVideo.script?.hook?.visual} guide={activeVideo.script?.guide} color="red" />
                                 <ScriptItem index={1} type="BODY" audio={activeVideo.script?.body?.audio} visual={activeVideo.script?.body?.visual} guide={activeVideo.script?.guide} color="blue" />
                                 <ScriptItem index={2} type="CTA" audio={activeVideo.script?.cta?.audio} visual={activeVideo.script?.cta?.visual} guide={activeVideo.script?.guide} color="green" />
 
-                                {/* SECCIÓN OTRAS VERSIONES */}
+                                {/* 2. ANÁLISIS ESTRATÉGICO & TÉCNICO */}
+                                <div className="grid md:grid-cols-2 gap-8 pt-6">
+                                    {/* Columna Izq: Claves y Recomendación */}
+                                    <div className="space-y-6">
+                                        {activeVideo.script?.keys && (
+                                            <div className="bg-yellow-50 p-6 rounded-3xl border border-yellow-100">
+                                                <h4 className="flex items-center gap-2 font-black text-yellow-600 mb-3 text-sm uppercase tracking-wider">
+                                                    <Lightbulb size={16} /> Claves del Éxito
+                                                </h4>
+                                                <p className="text-sm font-medium text-gray-700 leading-relaxed">
+                                                    {activeVideo.script.keys}
+                                                </p>
+                                            </div>
+                                        )}
+                                        {activeVideo.script?.recommendation && (
+                                            <div className="bg-purple-50 p-6 rounded-3xl border border-purple-100">
+                                                <h4 className="flex items-center gap-2 font-black text-purple-600 mb-3 text-sm uppercase tracking-wider">
+                                                    <CheckCircle2 size={16} /> Recomendación Final
+                                                </h4>
+                                                <p className="text-sm font-medium text-gray-700 leading-relaxed">
+                                                    {activeVideo.script.recommendation}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Columna Der: Detalles Técnicos */}
+                                    <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 flex flex-col justify-center space-y-4">
+                                        <h4 className="font-black text-gray-400 text-[10px] uppercase tracking-widest mb-2">Ficha Técnica</h4>
+
+                                        {activeVideo.script?.tone && (
+                                            <div className="flex items-start gap-3">
+                                                <div className="bg-white p-2 rounded-lg shadow-sm text-gray-400"><Music size={14} /></div>
+                                                <div>
+                                                    <span className="block text-[10px] font-bold text-gray-400 uppercase">Tono Sugerido</span>
+                                                    <span className="text-sm font-bold text-gray-800">{activeVideo.script.tone}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {activeVideo.script?.duration && (
+                                            <div className="flex items-start gap-3">
+                                                <div className="bg-white p-2 rounded-lg shadow-sm text-gray-400"><Clock size={14} /></div>
+                                                <div>
+                                                    <span className="block text-[10px] font-bold text-gray-400 uppercase">Duración</span>
+                                                    <span className="text-sm font-bold text-gray-800">{activeVideo.script.duration} seg</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {activeVideo.script?.visualStyle && (
+                                            <div className="flex items-start gap-3">
+                                                <div className="bg-white p-2 rounded-lg shadow-sm text-gray-400"><Video size={14} /></div>
+                                                <div>
+                                                    <span className="block text-[10px] font-bold text-gray-400 uppercase">Estilo Visual</span>
+                                                    <span className="text-sm font-bold text-gray-800 leading-tight">{activeVideo.script.visualStyle}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {activeVideo.script?.typography?.nombre && (
+                                            <div className="flex items-start gap-3">
+                                                <div className="bg-white p-2 rounded-lg shadow-sm text-gray-400"><Scissors size={14} /></div>
+                                                <div>
+                                                    <span className="block text-[10px] font-bold text-gray-400 uppercase">Tipografía</span>
+                                                    <span className="text-sm font-bold text-gray-800">{activeVideo.script.typography.nombre}</span>
+                                                    <span className="block text-[10px] text-gray-400 leading-tight mt-1">{activeVideo.script.typography.razon}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* 3. SECCIÓN OTRAS VERSIONES */}
                                 {activeVideo.script?.otherVersions?.length > 0 && (
                                     <div className="pt-12 border-t border-gray-100">
                                         <h4 className="text-xl font-black mb-6 flex items-center gap-2">
