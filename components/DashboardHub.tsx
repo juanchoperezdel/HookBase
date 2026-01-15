@@ -4,7 +4,7 @@ import {
     Layout, BarChart3, Settings, LogOut,
     FileText, Clock, Filter, ArrowUpRight, Loader2, ExternalLink, Menu, X, Zap,
     Mic2, Target, HeartHandshake, Star, Sparkles, Eye, CheckCircle, Lock, Key,
-    User, Award, TrendingUp, Sparkle, ChevronDown, ShieldCheck
+    User, Award, TrendingUp, Sparkle, ChevronDown, ShieldCheck, AlertCircle
 } from 'lucide-react';
 import { supabase } from './supabaseClient'; // Asegúrate de que la ruta sea correcta
 
@@ -512,30 +512,41 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                         <div className="py-20 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">Sin reportes aún.</div>
                                     ) : reports.map((report) => {
                                         const isReady = report.status === 'ready' || report.final_slide_url;
+                                        const isFailed = report.status === 'failed' || report.error_message;
+                                        const statusStyles = getStatusStyles(report.status);
                                         const dateStr = new Date(report.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
                                         return (
-                                            <div key={report.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm active:scale-[0.98] transition-all">
-                                                <div className="flex items-center justify-between mb-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isReady ? 'bg-zylo-purpleLight/50 text-zylo-purple' : 'bg-gray-100 text-gray-300'}`}>
-                                                            <Sparkle size={20} />
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-black text-zylo-black text-sm">Estrategia Viral</div>
-                                                            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{dateStr}</div>
-                                                        </div>
+                                            <div key={report.id} className="bg-white rounded-[2rem] p-6 shadow-card border border-gray-100 hover:shadow-xl transition-all">
+                                                <div className="flex items-center gap-4 mb-4">
+                                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isFailed ? 'bg-red-50 text-red-500' : isReady ? 'bg-zylo-purpleLight/50 text-zylo-purple' : 'bg-gray-100 text-gray-300'}`}>
+                                                        {isFailed ? <AlertCircle size={20} /> : <Sparkle size={20} />}
                                                     </div>
-                                                    <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${isReady ? 'bg-zylo-green/10 text-zylo-green' : 'bg-amber-400/10 text-amber-500'}`}>
-                                                        {isReady ? 'LISTO' : 'IA...'}
+                                                    <div>
+                                                        <div className="font-black text-zylo-black text-sm">Estrategia Viral</div>
+                                                        <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{dateStr}</div>
+                                                        <div className="flex items-center gap-2 mt-2">
+                                                            <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase ${statusStyles.bg} ${statusStyles.text}`}>
+                                                                <div className={`w-1 h-1 rounded-full ${statusStyles.dot}`}></div>
+                                                                {statusStyles.label}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                {isReady && (
+                                                {isReady ? (
                                                     <button
                                                         onClick={() => onNavigate('report', report.id)}
                                                         className="w-full flex items-center justify-center gap-2 py-3 bg-zylo-black text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl active:scale-95 transition-all"
                                                     >
                                                         Ver Reporte <ArrowUpRight size={14} />
                                                     </button>
+                                                ) : isFailed ? (
+                                                    <div className="w-full flex items-center justify-center gap-2 py-3 bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl border border-red-200">
+                                                        <AlertCircle size={14} /> Error - Reintentando
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-full flex items-center justify-center gap-2 py-3 bg-gray-100 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl">
+                                                        <Loader2 className="animate-spin" size={14} /> Generando...
+                                                    </div>
                                                 )}
                                             </div>
                                         );
@@ -567,6 +578,8 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                             ) : reports.map((report) => {
                                                 const dateStr = new Date(report.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
                                                 const isReady = report.status === 'ready' || report.final_slide_url;
+                                                const isFailed = report.status === 'failed' || report.error_message;
+                                                const statusStyles = getStatusStyles(report.status);
                                                 return (
                                                     <tr key={report.id} className="group hover:bg-white/80 transition-all cursor-pointer">
                                                         <td className="px-6 py-8">
@@ -586,9 +599,9 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                                             </div>
                                                         </td>
                                                         <td className="px-6 py-8">
-                                                            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-transparent ${isReady ? 'bg-zylo-green/10 text-zylo-green' : 'bg-amber-400/10 text-amber-500'} group-hover:border-current transition-all animate-pulse`}>
-                                                                <div className={`w-1.5 h-1.5 rounded-full ${isReady ? 'bg-zylo-green' : 'bg-amber-500'}`}></div>
-                                                                {isReady ? 'Listo para detonar' : 'Procesando IA'}
+                                                            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-transparent ${statusStyles.bg} ${statusStyles.text} group-hover:border-current transition-all ${!isFailed && !isReady ? 'animate-pulse' : ''}`}>
+                                                                <div className={`w-1.5 h-1.5 rounded-full ${statusStyles.dot}`}></div>
+                                                                {isFailed ? 'Error - Reintentando' : isReady ? 'Listo para detonar' : 'Procesando IA'}
                                                             </div>
                                                         </td>
                                                         <td className="px-6 py-8 text-right">
@@ -599,9 +612,15 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ onNavigate }) => {
                                                                 >
                                                                     Ver Reporte <ArrowUpRight size={14} />
                                                                 </button>
+                                                            ) : isFailed ? (
+                                                                <div className="inline-flex items-center gap-3 px-6 py-3.5 bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest rounded-2xl border border-red-200">
+                                                                    <AlertCircle size={14} />
+                                                                    Error - Reintentando
+                                                                </div>
                                                             ) : (
-                                                                <div className="inline-flex items-center gap-2 px-6 py-3.5 bg-gray-50 text-gray-300 text-[10px] font-black uppercase tracking-widest rounded-2xl">
-                                                                    Generando <Clock size={14} className="animate-spin" />
+                                                                <div className="inline-flex items-center gap-3 px-6 py-3.5 bg-gray-100 text-gray-400 text-[10px] font-black uppercase tracking-widest rounded-2xl">
+                                                                    <Loader2 className="animate-spin" size={14} />
+                                                                    Generando...
                                                                 </div>
                                                             )}
                                                         </td>
