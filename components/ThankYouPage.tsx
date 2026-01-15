@@ -79,7 +79,10 @@ export function ThankYouPage({ onGoToLogin }: ThankYouPageProps) {
                         brand_aspiration: leadData.brand_aspiration,
                         target_pain_point: leadData.target_pain_point,
                         competitors: leadData.competitors,
-                        business_description: leadData.company_name || leadData.industry || "General"
+                        business_description: leadData.company_name || leadData.industry || "General",
+                        subscription_status: "active",
+                        status: "active",
+                        plan: "pro"
                     }]);
 
                 if (clientError) {
