@@ -43,10 +43,14 @@ export function ThankYouPage({ onGoToLogin }: ThankYouPageProps) {
         }, 500);
     };
 
-    const handleApprovedPayment = async (userId: string) => {
+    const handleApprovedPayment = async (rawUserId: string) => {
         setStatus('processing');
+        // Handle cases where external_reference is a compound ID (e.g., userId_timestamp)
+        const userId = rawUserId.split('_')[0];
+        console.log("Processing activation for clean userId:", userId);
+
         try {
-            // 1. Update status in Supabase
+            // 1. Update status in Supabase (onboarding_leads)
             const { data: leadData, error: updateError } = await supabase
                 .from('onboarding_leads')
                 .update({ status: 'paid' })
@@ -56,30 +60,34 @@ export function ThankYouPage({ onGoToLogin }: ThankYouPageProps) {
 
             if (updateError) {
                 console.error("Error updating lead status:", updateError);
-                // We proceed anyway to try to trigger the bot if we have data
+                // If we can't find the lead by ID, maybe it's already updated or doesn't exist?
+                // We'll try to fetch it anyway to see if we can proceed
             }
 
             // 2. Initialize Client in 'clients' table
-            // This ensures they only appear in the dashboard/reports after paying
-            if (leadData) {
+            // This ensures they appear in the dashboard/reports after paying
+            const lead = leadData || (await supabase.from('onboarding_leads').select().eq('user_id', userId).single()).data;
+
+            if (lead) {
+                console.log("Lead found, activating client profile...");
                 const { error: clientError } = await supabase
                     .from('clients')
                     .upsert([{
                         id: userId,
-                        full_name: leadData.full_name || "Nuevo Cliente",
-                        email: leadData.email,
-                        whatsapp: leadData.whatsapp,
-                        company_name: leadData.company_name,
-                        industry: leadData.industry,
-                        brand_tone: leadData.brand_tone,
-                        goal: leadData.goal,
-                        video_formats: leadData.video_formats,
-                        usp: leadData.usp,
-                        brand_perception: leadData.brand_perception,
-                        brand_aspiration: leadData.brand_aspiration,
-                        target_pain_point: leadData.target_pain_point,
-                        competitors: leadData.competitors,
-                        business_description: leadData.company_name || leadData.industry || "General",
+                        full_name: lead.full_name || "Nuevo Cliente",
+                        email: lead.email,
+                        whatsapp: lead.whatsapp,
+                        company_name: lead.company_name,
+                        industry: lead.industry,
+                        brand_tone: lead.brand_tone,
+                        goal: lead.goal,
+                        video_formats: lead.video_formats,
+                        usp: lead.usp,
+                        brand_perception: lead.brand_perception,
+                        brand_aspiration: lead.brand_aspiration,
+                        target_pain_point: lead.target_pain_point,
+                        competitors: lead.competitors,
+                        business_description: lead.company_name || lead.industry || "General",
                         subscription_status: "active",
                         status: "active",
                         plan: "pro"
@@ -89,34 +97,13 @@ export function ThankYouPage({ onGoToLogin }: ThankYouPageProps) {
                     console.error("Error activating client profile:", clientError);
                 }
 
-                // 3. Trigger Bot
-                const competitorsString = Array.isArray(leadData.competitors)
-                    ? leadData.competitors.join(", ")
-                    : (leadData.competitors || "Sin competencia específica");
-
-                const payload = {
-                    userId: userId,
-                    clientName: leadData.full_name || "Cliente",
-                    // ... rest of payload same as before
-                    clientEmail: leadData.email,
-                    businessDescription: `Empresa: ${leadData.company_name}. Industria: ${leadData.industry}. USP: ${leadData.usp}. Objetivo: ${leadData.goal}`,
-                    username: competitorsString,
-                    companyName: leadData.company_name || "",
-                    industry: leadData.industry || "General",
-                    brandTone: leadData.brand_tone || "Neutral",
-                    targetPainPoint: leadData.target_pain_point || "",
-                    videoFormats: leadData.video_formats || [],
-                    brandPerception: leadData.brand_perception || "",
-                    brandAspiration: leadData.brand_aspiration || "",
-                    goal: leadData.goal || "",
-                    whatsapp: leadData.whatsapp || ""
-                };
-
-                await fetch('https://bot-analizador.onrender.com/webhook/new-report', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
+                // 3. Bot Triggered automatically via Database Webhook
+                // When we updated onboarding_leads above, a Supabase trigger automatically
+                // launched the bot webhook with the correct payload.
+                console.log("Database updated. Bot activation should be triggered via DB Hook.");
+            } else {
+                console.error("Lead not found for activation:", userId);
+                throw new Error("No se encontró el registro del lead.");
             }
 
             setStatus('approved');

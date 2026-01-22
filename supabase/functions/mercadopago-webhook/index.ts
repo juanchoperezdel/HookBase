@@ -53,22 +53,79 @@ serve(async (req) => {
                 // Init Supabase Client
                 const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
-                // Update Client Status
-                const { error } = await supabase
+                // 1. Check if client exists
+                const { data: existingClient } = await supabase
                     .from("clients")
-                    .update({
-                        subscription_status: "active",
-                        status: "active", // Legacy field just in case
-                        plan: "pro",
-                        payment_id: preapprovalId
-                    })
-                    .eq("id", userId);
+                    .select("id")
+                    .eq("id", userId)
+                    .single();
 
-                if (error) {
-                    console.error("Supabase update error:", error);
-                    throw error;
+                if (!existingClient) {
+                    console.log(`Client ${userId} not found. Creating from onboarding_leads...`);
+                    
+                    // 2. Fetch Lead Data
+                    const { data: lead } = await supabase
+                        .from('onboarding_leads')
+                        .select('*')
+                        .eq('user_id', userId)
+                        .single();
+
+                    if (!lead) {
+                        console.error(`Lead not found for user ${userId}. Cannot create client.`);
+                        // We return 200 to MP to avoid retries if it's a critical data inconsistencies pattern
+                        // But we verify logging for debugging.
+                        // Ideally we should throw if we want MP to retry, but if data is missing, retrying won't help.
+                    } else {
+                        // 3. Create Client
+                        const { error: createError } = await supabase
+                            .from('clients')
+                            .insert([{
+                                id: userId,
+                                full_name: lead.full_name || "Nuevo Cliente",
+                                email: lead.email,
+                                whatsapp: lead.whatsapp,
+                                company_name: lead.company_name,
+                                industry: lead.industry,
+                                brand_tone: lead.brand_tone,
+                                goal: lead.goal,
+                                video_formats: lead.video_formats,
+                                usp: lead.usp,
+                                brand_perception: lead.brand_perception,
+                                brand_aspiration: lead.brand_aspiration,
+                                target_pain_point: lead.target_pain_point,
+                                competitors: lead.competitors,
+                                business_description: lead.company_name || lead.industry || "General",
+                                subscription_status: "active",
+                                status: "active",
+                                plan: "pro",
+                                payment_id: preapprovalId
+                            }]);
+
+                        if (createError) {
+                            console.error("Error creating client from webhook:", createError);
+                            throw createError;
+                        }
+                        console.log("Client created successfully from webhook.");
+                    }
+                } else {
+                    console.log(`Client ${userId} exists. Updating status...`);
+                    // 4. Update Existing Client
+                    const { error } = await supabase
+                        .from("clients")
+                        .update({
+                            subscription_status: "active",
+                            status: "active", // Legacy field just in case
+                            plan: "pro",
+                            payment_id: preapprovalId
+                        })
+                        .eq("id", userId);
+
+                    if (error) {
+                        console.error("Supabase update error:", error);
+                        throw error;
+                    }
+                    console.log("User subscription updated successfully");
                 }
-                console.log("User subscription updated successfully");
             }
         }
 

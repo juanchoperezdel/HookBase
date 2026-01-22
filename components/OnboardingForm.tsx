@@ -43,6 +43,23 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [createdUserId, setCreatedUserId] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setCreatedUserId(session.user.id);
+        // Pre-fill some data if we have it
+        setFormData(prev => ({
+          ...prev,
+          email: session.user.email || prev.email,
+          name: session.user.user_metadata?.full_name || prev.name,
+        }));
+      }
+    };
+    checkUser();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -65,7 +82,6 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onBack, initialS
   });
 
   const [competitorInput, setCompetitorInput] = useState('');
-  const [createdUserId, setCreatedUserId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
